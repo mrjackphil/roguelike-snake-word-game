@@ -7,24 +7,6 @@ const text_display = new ROT.Display({width: W, height: 12, fontSize: 16});
 document.body.appendChild(display.getContainer());
 document.body.appendChild(text_display.getContainer());
 
-// Map Generation
-const map = new ROT.Map.Cellular(W, H);
-const solids = createSolids();
-map.randomize(0.5);
-map.create();
-map.connect(null, 0);
-map.create( (x, y, wall) => {
-  wall && solids.add(x, y);
-  drawSolids();
-});
-
-interface Solids {
-  solids: {x: number, y: number}[],
-  add: (x: number, y: number) => void,
-  is: (x: number, y: number) => boolean,
-  not: (x: number, y: number) => boolean,
-}
-
 // Units
 
 const player = {
@@ -43,6 +25,13 @@ interface Console {
   lines: string[],
   addLine: (s: string) => void;
   update: () => void;
+}
+
+interface Solids {
+  solids: {x: number, y: number}[],
+  add: (x: number, y: number) => void,
+  is: (x: number, y: number) => boolean,
+  not: (x: number, y: number) => boolean,
 }
 
 interface DrawEvent {
@@ -154,7 +143,18 @@ function text(s: string) {
 // Initalization
 const log = createConsole(text_display);
 const drawEvents = createDrawEvents(display);
+const solids = createSolids();
 const char = createCharController(solids, drawEvents);
+
+// Map Generation
+const map = new ROT.Map.Cellular(W, H);
+map.randomize(0.5);
+map.create();
+map.connect(null, 0);
+map.create( (x, y, wall) => {
+  wall && solids.add(x, y);
+  drawSolids();
+});
 
 // Movement
 function pathF(x: number, y: number) {
@@ -174,9 +174,6 @@ function npcMove(n: {x: number, y: number}) {
     });
   }
 }
-
-
-
 
 // Input handling
 

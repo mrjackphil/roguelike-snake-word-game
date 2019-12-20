@@ -3932,16 +3932,6 @@ var display = new Display({ width: W, height: H, fontSize: 16 });
 var text_display = new Display({ width: W, height: 12, fontSize: 16 });
 document.body.appendChild(display.getContainer());
 document.body.appendChild(text_display.getContainer());
-// Map Generation
-var map = new index.Cellular(W, H);
-var solids = createSolids();
-map.randomize(0.5);
-map.create();
-map.connect(null, 0);
-map.create(function (x, y, wall) {
-    wall && solids.add(x, y);
-    drawSolids();
-});
 // Units
 var player = {
     x: 0,
@@ -4048,7 +4038,17 @@ function text(s) {
 // Initalization
 var log = createConsole(text_display);
 var drawEvents = createDrawEvents(display);
+var solids = createSolids();
 var char = createCharController();
+// Map Generation
+var map = new index.Cellular(W, H);
+map.randomize(0.5);
+map.create();
+map.connect(null, 0);
+map.create(function (x, y, wall) {
+    wall && solids.add(x, y);
+    drawSolids();
+});
 // Movement
 function pathF(x, y) {
     return solids.not(x, y);
