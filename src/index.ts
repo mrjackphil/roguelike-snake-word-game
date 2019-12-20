@@ -12,6 +12,7 @@ const map = new ROT.Map.Cellular(W, H);
 const solids = createSolids();
 map.randomize(0.5);
 map.create();
+map.connect(null, 0);
 map.create( (x, y, wall) => {
   wall && display.draw(x, y, "#", "green", "");
   wall && solids.add(x, y);
