@@ -1,0 +1,25 @@
+{
+  "name": "rotjs-example",
+  "version": "1.0.0",
+  "description": "Example usage of RotJS library.",
+  "main": "dist/index.js",
+  "author": "MrJackphil",
+  "license": "MIT",
+  "scripts": {
+    "build": "rollup -c",
+    "start": "rollup -c -w"
+  },
+  "dependencies": {
+    "rot-js": "^2.1.1"
+  },
+  "devDependencies": {
+    "@rollup/plugin-html": "^0.1.0",
+    "@rollup/plugin-node-resolve": "^6.0.0",
+    "@rollup/plugin-typescript": "^2.0.1",
+    "rollup": "^1.27.13",
+    "rollup-plugin-livereload": "^1.0.4",
+    "rollup-plugin-serve": "^1.0.1",
+    "tslib": "^1.10.0",
+    "typescript": "^3.7.3"
+  }
+}
