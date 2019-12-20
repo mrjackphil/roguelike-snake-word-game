@@ -92,7 +92,7 @@ function text(s: string) {
 
 // Movement
 
-function createDrawEvents() {
+function createDrawEvents(d: ROT.Display) {
   return {
     events: {},
     add: function(x: number, y: number, s: string, f: string, b: string) {
@@ -106,12 +106,12 @@ function createDrawEvents() {
     },
     draw: function() {
       const { events } = this;
-      display.clear();
+      d.clear();
       drawSolids();
       for (const key in events) {
         if (events.hasOwnProperty(key)) {
           const e = events[key];
-          display.draw(e[0], e[1], e[2], e[3], e[4]);
+          d.draw(e[0], e[1], e[2], e[3], e[4]);
         }
       }
       this.events = {};
@@ -119,7 +119,7 @@ function createDrawEvents() {
   }
 };
 
-const drawEvents = createDrawEvents();
+const drawEvents = createDrawEvents(display);
 
 function pathF(x: number, y: number) {
   return solids.not(x, y);
@@ -131,11 +131,9 @@ function npcMove(n: {x: number, y: number}) {
     n.y++;
     npcMove(n);
   } else {
-    // display.draw(n.x, n.y, "N", "yellow", "");
     drawEvents.add(n.x, n.y, "N", "yellow", "");
     const astar = new ROT.Path.AStar(player.x, player.y, pathF);
     astar.compute(n.x, n.y, (x, y) => {
-      // display.draw(x, y, null, "", "rgb(133, 133, 133, 0.5)")
       drawEvents.add(x, y, "", "", "rgb(133, 133, 133, 0.5)");
     });
   }
@@ -158,7 +156,6 @@ function walk(dir: "left" | "right" | "up" | "down", pl: { x: number, y: number}
       solids.not(x, y - 1) && pl.y--;
       break;
   }
-  // display.draw(player.x, player.y, "@", "red", "");
   drawEvents.add(player.x, player.y, "@", "red", "");
   npcMove(npc);
   text(`you walked at ${pl.x}, ${pl.y}`);

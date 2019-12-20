@@ -3994,7 +3994,7 @@ function text(s) {
     log.addLine(Util.capitalize(s));
 }
 // Movement
-function createDrawEvents() {
+function createDrawEvents(d) {
     return {
         events: {},
         add: function (x, y, s, f, b) {
@@ -4007,19 +4007,19 @@ function createDrawEvents() {
         },
         draw: function () {
             var events = this.events;
-            display.clear();
+            d.clear();
             drawSolids();
             for (var key in events) {
                 if (events.hasOwnProperty(key)) {
                     var e = events[key];
-                    display.draw(e[0], e[1], e[2], e[3], e[4]);
+                    d.draw(e[0], e[1], e[2], e[3], e[4]);
                 }
             }
             this.events = {};
         }
     };
 }
-var drawEvents = createDrawEvents();
+var drawEvents = createDrawEvents(display);
 function pathF(x, y) {
     return solids.not(x, y);
 }
@@ -4030,11 +4030,9 @@ function npcMove(n) {
         npcMove(n);
     }
     else {
-        // display.draw(n.x, n.y, "N", "yellow", "");
         drawEvents.add(n.x, n.y, "N", "yellow", "");
         var astar = new index$1.AStar(player.x, player.y, pathF);
         astar.compute(n.x, n.y, function (x, y) {
-            // display.draw(x, y, null, "", "rgb(133, 133, 133, 0.5)")
             drawEvents.add(x, y, "", "", "rgb(133, 133, 133, 0.5)");
         });
     }
@@ -4056,7 +4054,6 @@ function walk(dir, pl) {
             solids.not(x, y - 1) && pl.y--;
             break;
     }
-    // display.draw(player.x, player.y, "@", "red", "");
     drawEvents.add(player.x, player.y, "@", "red", "");
     npcMove(npc);
     text("you walked at " + pl.x + ", " + pl.y);
