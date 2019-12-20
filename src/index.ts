@@ -3,7 +3,9 @@ import * as ROT from 'rot-js';
 const W = 50;
 const H = 50;
 const display = new ROT.Display({width: W, height: H, fontSize: 16});
+const text_display = new ROT.Display({width: W, height: 10, fontSize: 16});
 document.body.appendChild(display.getContainer());
+document.body.appendChild(text_display.getContainer());
 
 // Map Generation
 const map = new ROT.Map.Cellular(W, H);
@@ -23,16 +25,17 @@ interface Solids {
 }
 
 function createSolids(): Solids {
+  const self = this as Solids;
   return {
     solids: [],
     add: function(x: number, y: number) {
-      this.solids.push({x, y});
+      self.solids.push({x, y});
     },
     is: function(x: number, y: number) {
-      return this.solids.filter( (o: { x: number, y: number}) => o.x === x && o.y === y).length > 0;
+      return self.solids.filter( (o: { x: number, y: number}) => o.x === x && o.y === y).length > 0;
     },
     not: function(x: number, y: number) {
-      return this.solids.filter( (o: { x: number, y: number}) => o.x === x && o.y === y).length === 0;
+      return self.solids.filter( (o: { x: number, y: number}) => o.x === x && o.y === y).length === 0;
     },
   }
 }
@@ -42,6 +45,32 @@ function createSolids(): Solids {
 const player = {
   x: 0,
   y: 0,
+}
+
+// Actions
+interface Console {
+  lines: string[],
+  addLine: (s: string) => void;
+  update: () => void;
+}
+
+function createConsole(d: ROT.Display): Console {
+  const self = this as Console;
+  return {
+    lines: [],
+    addLine: function(s: string) {
+      this.lines.push(s);
+      self.update();
+    },
+    update: function() {
+      d.clear();
+    }
+  }
+}
+
+function text(s: string) {
+  text_display.clear();
+  text_display.drawText(1, 1, ROT.Util.capitalize(s));
 }
 
 // Movement
@@ -64,6 +93,7 @@ function walk(dir: "left" | "right" | "up" | "down", pl: { x: number, y: number}
       break;
   }
   display.draw(player.x, player.y, "@", "red", "");
+  text(`you walked at ${pl.x}, ${pl.y}`);
 }
 
 // Input handling

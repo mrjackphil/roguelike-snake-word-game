@@ -190,6 +190,59 @@ class Canvas extends Backend {
 function mod(x, n) {
     return (x % n + n) % n;
 }
+function clamp(val, min = 0, max = 1) {
+    if (val < min)
+        return min;
+    if (val > max)
+        return max;
+    return val;
+}
+function capitalize(string) {
+    return string.charAt(0).toUpperCase() + string.substring(1);
+}
+/**
+ * Format a string in a flexible way. Scans for %s strings and replaces them with arguments. List of patterns is modifiable via String.format.map.
+ * @param {string} template
+ * @param {any} [argv]
+ */
+function format(template, ...args) {
+    let map = format.map;
+    let replacer = function (match, group1, group2, index) {
+        if (template.charAt(index - 1) == "%") {
+            return match.substring(1);
+        }
+        if (!args.length) {
+            return match;
+        }
+        let obj = args[0];
+        let group = group1 || group2;
+        let parts = group.split(",");
+        let name = parts.shift() || "";
+        let method = map[name.toLowerCase()];
+        if (!method) {
+            return match;
+        }
+        obj = args.shift();
+        let replaced = obj[method].apply(obj, parts);
+        let first = name.charAt(0);
+        if (first != first.toLowerCase()) {
+            replaced = capitalize(replaced);
+        }
+        return replaced;
+    };
+    return template.replace(/%(?:([a-z]+)|(?:{([^}]+)}))/gi, replacer);
+}
+format.map = {
+    "s": "toString"
+};
+
+var util = /*#__PURE__*/Object.freeze({
+    __proto__: null,
+    mod: mod,
+    clamp: clamp,
+    capitalize: capitalize,
+    format: format
+});
 
 /**
  * @class Hexagonal backend
@@ -3674,10 +3727,14 @@ class Rogue extends Map {
 
 var index = { Arena, Uniform, Cellular, Digger, EllerMaze, DividedMaze, IceyMaze, Rogue };
 
+const Util = util;
+
 var W = 50;
 var H = 50;
 var display = new Display({ width: W, height: H, fontSize: 16 });
+var text_display = new Display({ width: W, height: 10, fontSize: 16 });
 document.body.appendChild(display.getContainer());
+document.body.appendChild(text_display.getContainer());
 // Map Generation
 var map = new index.Cellular(W, H);
 var solids = createSolids();
@@ -3688,16 +3745,17 @@ map.create(function (x, y, wall) {
     wall && solids.add(x, y);
 });
 function createSolids() {
+    var self = this;
     return {
         solids: [],
         add: function (x, y) {
-            this.solids.push({ x: x, y: y });
+            self.solids.push({ x: x, y: y });
         },
         is: function (x, y) {
-            return this.solids.filter(function (o) { return o.x === x && o.y === y; }).length > 0;
+            return self.solids.filter(function (o) { return o.x === x && o.y === y; }).length > 0;
         },
         not: function (x, y) {
-            return this.solids.filter(function (o) { return o.x === x && o.y === y; }).length === 0;
+            return self.solids.filter(function (o) { return o.x === x && o.y === y; }).length === 0;
         },
     };
 }
@@ -3706,6 +3764,10 @@ var player = {
     x: 0,
     y: 0,
 };
+function text(s) {
+    text_display.clear();
+    text_display.drawText(1, 1, Util.capitalize(s));
+}
 // Movement
 function walk(dir, pl) {
     var x = pl.x, y = pl.y;
@@ -3725,6 +3787,7 @@ function walk(dir, pl) {
             break;
     }
     display.draw(player.x, player.y, "@", "red", "");
+    text("you walked at " + pl.x + ", " + pl.y);
 }
 // Input handling
 document.addEventListener("keydown", function (e) {
