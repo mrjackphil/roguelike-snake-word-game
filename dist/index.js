@@ -3745,17 +3745,16 @@ map.create(function (x, y, wall) {
     wall && solids.add(x, y);
 });
 function createSolids() {
-    var self = this;
     return {
         solids: [],
         add: function (x, y) {
-            self.solids.push({ x: x, y: y });
+            this.solids.push({ x: x, y: y });
         },
         is: function (x, y) {
-            return self.solids.filter(function (o) { return o.x === x && o.y === y; }).length > 0;
+            return this.solids.filter(function (o) { return o.x === x && o.y === y; }).length > 0;
         },
         not: function (x, y) {
-            return self.solids.filter(function (o) { return o.x === x && o.y === y; }).length === 0;
+            return this.solids.filter(function (o) { return o.x === x && o.y === y; }).length === 0;
         },
     };
 }
@@ -3764,9 +3763,24 @@ var player = {
     x: 0,
     y: 0,
 };
+function createConsole(d) {
+    return {
+        lines: [],
+        addLine: function (s) {
+            this.lines.push(s);
+            this.update();
+        },
+        update: function () {
+            d.clear();
+            this.lines.reverse().slice(0, 5).forEach(function (s, i) {
+                d.drawText(1, 1 + i, s);
+            });
+        }
+    };
+}
+var log = createConsole(text_display);
 function text(s) {
-    text_display.clear();
-    text_display.drawText(1, 1, Util.capitalize(s));
+    log.addLine(Util.capitalize(s));
 }
 // Movement
 function walk(dir, pl) {

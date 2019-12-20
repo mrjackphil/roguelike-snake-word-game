@@ -25,17 +25,16 @@ interface Solids {
 }
 
 function createSolids(): Solids {
-  const self = this as Solids;
   return {
     solids: [],
     add: function(x: number, y: number) {
-      self.solids.push({x, y});
+      this.solids.push({x, y});
     },
     is: function(x: number, y: number) {
-      return self.solids.filter( (o: { x: number, y: number}) => o.x === x && o.y === y).length > 0;
+      return this.solids.filter( (o: { x: number, y: number}) => o.x === x && o.y === y).length > 0;
     },
     not: function(x: number, y: number) {
-      return self.solids.filter( (o: { x: number, y: number}) => o.x === x && o.y === y).length === 0;
+      return this.solids.filter( (o: { x: number, y: number}) => o.x === x && o.y === y).length === 0;
     },
   }
 }
@@ -55,22 +54,24 @@ interface Console {
 }
 
 function createConsole(d: ROT.Display): Console {
-  const self = this as Console;
   return {
     lines: [],
     addLine: function(s: string) {
       this.lines.push(s);
-      self.update();
+      this.update();
     },
     update: function() {
       d.clear();
+      this.lines.reverse().slice(0, 5).forEach( (s, i) => {
+        d.drawText(1, 1 + i, s);
+      });
     }
   }
 }
+const log = createConsole(text_display);
 
 function text(s: string) {
-  text_display.clear();
-  text_display.drawText(1, 1, ROT.Util.capitalize(s));
+  log.addLine(ROT.Util.capitalize(s));
 }
 
 // Movement
