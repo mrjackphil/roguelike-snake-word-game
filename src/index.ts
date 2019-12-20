@@ -45,6 +45,13 @@ interface Console {
   update: () => void;
 }
 
+interface DrawEvent {
+  events: { [key: string]: string },
+  add: (x: number, y: number, s: string, f: string, b: string) => void;
+  draw: () => void;
+
+}
+
 // Creators
 function createSolids(): Solids {
   return {
@@ -80,7 +87,7 @@ function createConsole(d: ROT.Display): Console {
   }
 }
 
-function createDrawEvents(d: ROT.Display) {
+function createDrawEvents(d: ROT.Display): DrawEvent {
   return {
     events: {},
     add: function(x: number, y: number, s: string, f: string, b: string) {
@@ -107,6 +114,33 @@ function createDrawEvents(d: ROT.Display) {
   }
 };
 
+function createCharController(s: Solids, dEv: DrawEvent) {
+  return {
+    walk: function (dir: "left" | "right" | "up" | "down", pl: { x: number, y: number}) {
+      const {x, y} = pl;
+      display.draw(x, y, "", "", "");
+      switch (dir) {
+        case "left":
+          solids.not(x - 1, y) && pl.x--;
+          break;
+        case "right":
+          solids.not(x + 1, y) && pl.x++;
+          break;
+        case "down":
+          solids.not(x, y + 1) && pl.y++;
+          break;
+        case "up":
+          solids.not(x, y - 1) && pl.y--;
+          break;
+      }
+      drawEvents.add(player.x, player.y, "@", "red", "");
+      npcMove(npc);
+      text(`you walked at ${pl.x}, ${pl.y}`);
+      drawEvents.draw();
+    }
+  }
+}
+
 // Utils
 function drawSolids() {
   solids.solids.forEach( s => {
@@ -120,6 +154,7 @@ function text(s: string) {
 // Initalization
 const log = createConsole(text_display);
 const drawEvents = createDrawEvents(display);
+const char = createCharController(solids, drawEvents);
 
 // Movement
 function pathF(x: number, y: number) {
@@ -140,28 +175,8 @@ function npcMove(n: {x: number, y: number}) {
   }
 }
 
-function walk(dir: "left" | "right" | "up" | "down", pl: { x: number, y: number}) {
-  const {x, y} = pl;
-  display.draw(x, y, "", "", "");
-  switch (dir) {
-    case "left":
-      solids.not(x - 1, y) && pl.x--;
-      break;
-    case "right":
-      solids.not(x + 1, y) && pl.x++;
-      break;
-    case "down":
-      solids.not(x, y + 1) && pl.y++;
-      break;
-    case "up":
-      solids.not(x, y - 1) && pl.y--;
-      break;
-  }
-  drawEvents.add(player.x, player.y, "@", "red", "");
-  npcMove(npc);
-  text(`you walked at ${pl.x}, ${pl.y}`);
-  drawEvents.draw();
-}
+
+
 
 // Input handling
 
@@ -169,16 +184,16 @@ document.addEventListener("keydown", (e) => {
   const {VK_W, VK_S, VK_A, VK_D} = ROT.KEYS;
   switch (e.keyCode) {
     case VK_W:
-      walk("up", player);
+      char.walk("up", player);
       return;
     case VK_A:
-      walk("left", player);
+      char.walk("left", player);
       return;
     case VK_D:
-      walk("right", player);
+      char.walk("right", player);
       return;
     case VK_S:
-      walk("down", player);
+      char.walk("down", player);
       return;
   }
 });

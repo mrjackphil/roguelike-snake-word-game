@@ -4010,6 +4010,32 @@ function createDrawEvents(d) {
         }
     };
 }
+function createCharController(s, dEv) {
+    return {
+        walk: function (dir, pl) {
+            var x = pl.x, y = pl.y;
+            display.draw(x, y, "", "", "");
+            switch (dir) {
+                case "left":
+                    solids.not(x - 1, y) && pl.x--;
+                    break;
+                case "right":
+                    solids.not(x + 1, y) && pl.x++;
+                    break;
+                case "down":
+                    solids.not(x, y + 1) && pl.y++;
+                    break;
+                case "up":
+                    solids.not(x, y - 1) && pl.y--;
+                    break;
+            }
+            drawEvents.add(player.x, player.y, "@", "red", "");
+            npcMove(npc);
+            text("you walked at " + pl.x + ", " + pl.y);
+            drawEvents.draw();
+        }
+    };
+}
 // Utils
 function drawSolids() {
     solids.solids.forEach(function (s) {
@@ -4022,6 +4048,7 @@ function text(s) {
 // Initalization
 var log = createConsole(text_display);
 var drawEvents = createDrawEvents(display);
+var char = createCharController();
 // Movement
 function pathF(x, y) {
     return solids.not(x, y);
@@ -4040,43 +4067,22 @@ function npcMove(n) {
         });
     }
 }
-function walk(dir, pl) {
-    var x = pl.x, y = pl.y;
-    display.draw(x, y, "", "", "");
-    switch (dir) {
-        case "left":
-            solids.not(x - 1, y) && pl.x--;
-            break;
-        case "right":
-            solids.not(x + 1, y) && pl.x++;
-            break;
-        case "down":
-            solids.not(x, y + 1) && pl.y++;
-            break;
-        case "up":
-            solids.not(x, y - 1) && pl.y--;
-            break;
-    }
-    drawEvents.add(player.x, player.y, "@", "red", "");
-    npcMove(npc);
-    text("you walked at " + pl.x + ", " + pl.y);
-    drawEvents.draw();
-}
 // Input handling
 document.addEventListener("keydown", function (e) {
     var _a = KEYS, VK_W = _a.VK_W, VK_S = _a.VK_S, VK_A = _a.VK_A, VK_D = _a.VK_D;
     switch (e.keyCode) {
         case VK_W:
-            walk("up", player);
+            char.walk("up", player);
             return;
         case VK_A:
-            walk("left", player);
+            char.walk("left", player);
             return;
         case VK_D:
-            walk("right", player);
+            char.walk("right", player);
             return;
         case VK_S:
-            walk("down", player);
+            char.walk("down", player);
             return;
     }
 });
+//# sourceMappingURL=index.js.map
