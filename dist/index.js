@@ -3942,11 +3942,17 @@ map.create(function (x, y, wall) {
     wall && solids.add(x, y);
     drawSolids();
 });
-function drawSolids() {
-    solids.solids.forEach(function (s) {
-        display.draw(s.x, s.y, "#", "green", "");
-    });
-}
+// Units
+var player = {
+    x: 0,
+    y: 0,
+};
+var npc = {
+    id: 0,
+    x: 20,
+    y: 20,
+};
+// Creators
 function createSolids() {
     return {
         solids: [],
@@ -3961,16 +3967,6 @@ function createSolids() {
         },
     };
 }
-// Units
-var player = {
-    x: 0,
-    y: 0,
-};
-var npc = {
-    id: 0,
-    x: 20,
-    y: 20,
-};
 function createConsole(d) {
     return {
         lines: [],
@@ -3989,11 +3985,6 @@ function createConsole(d) {
         }
     };
 }
-var log = createConsole(text_display);
-function text(s) {
-    log.addLine(Util.capitalize(s));
-}
-// Movement
 function createDrawEvents(d) {
     return {
         events: {},
@@ -4019,7 +4010,19 @@ function createDrawEvents(d) {
         }
     };
 }
+// Utils
+function drawSolids() {
+    solids.solids.forEach(function (s) {
+        display.draw(s.x, s.y, "#", "green", "");
+    });
+}
+function text(s) {
+    log.addLine(Util.capitalize(s));
+}
+// Initalization
+var log = createConsole(text_display);
 var drawEvents = createDrawEvents(display);
+// Movement
 function pathF(x, y) {
     return solids.not(x, y);
 }
@@ -4077,4 +4080,3 @@ document.addEventListener("keydown", function (e) {
             return;
     }
 });
-//# sourceMappingURL=index.js.map

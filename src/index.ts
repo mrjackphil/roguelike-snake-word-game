@@ -18,32 +18,11 @@ map.create( (x, y, wall) => {
   drawSolids();
 });
 
-function drawSolids() {
-  solids.solids.forEach( s => {
-    display.draw(s.x, s.y, "#", "green", "");
-  })
-}
-
 interface Solids {
   solids: {x: number, y: number}[],
   add: (x: number, y: number) => void,
   is: (x: number, y: number) => boolean,
   not: (x: number, y: number) => boolean,
-}
-
-function createSolids(): Solids {
-  return {
-    solids: [],
-    add: function(x: number, y: number) {
-      this.solids.push({x, y});
-    },
-    is: function(x: number, y: number) {
-      return this.solids.filter( (o: { x: number, y: number}) => o.x === x && o.y === y).length > 0;
-    },
-    not: function(x: number, y: number) {
-      return this.solids.filter( (o: { x: number, y: number}) => o.x === x && o.y === y).length === 0;
-    },
-  }
 }
 
 // Units
@@ -59,11 +38,27 @@ const npc = {
   y: 20,
 }
 
-// Actions
+// Types
 interface Console {
   lines: string[],
   addLine: (s: string) => void;
   update: () => void;
+}
+
+// Creators
+function createSolids(): Solids {
+  return {
+    solids: [],
+    add: function(x: number, y: number) {
+      this.solids.push({x, y});
+    },
+    is: function(x: number, y: number) {
+      return this.solids.filter( (o: { x: number, y: number}) => o.x === x && o.y === y).length > 0;
+    },
+    not: function(x: number, y: number) {
+      return this.solids.filter( (o: { x: number, y: number}) => o.x === x && o.y === y).length === 0;
+    },
+  }
 }
 
 function createConsole(d: ROT.Display): Console {
@@ -84,13 +79,6 @@ function createConsole(d: ROT.Display): Console {
     }
   }
 }
-const log = createConsole(text_display);
-
-function text(s: string) {
-  log.addLine(ROT.Util.capitalize(s));
-}
-
-// Movement
 
 function createDrawEvents(d: ROT.Display) {
   return {
@@ -119,8 +107,21 @@ function createDrawEvents(d: ROT.Display) {
   }
 };
 
+// Utils
+function drawSolids() {
+  solids.solids.forEach( s => {
+    display.draw(s.x, s.y, "#", "green", "");
+  })
+}
+
+function text(s: string) {
+  log.addLine(ROT.Util.capitalize(s));
+}
+// Initalization
+const log = createConsole(text_display);
 const drawEvents = createDrawEvents(display);
 
+// Movement
 function pathF(x: number, y: number) {
   return solids.not(x, y);
 }
