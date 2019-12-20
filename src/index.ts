@@ -3,7 +3,7 @@ import * as ROT from 'rot-js';
 const W = 50;
 const H = 50;
 const display = new ROT.Display({width: W, height: H, fontSize: 16});
-const text_display = new ROT.Display({width: W, height: 10, fontSize: 16});
+const text_display = new ROT.Display({width: W, height: 12, fontSize: 16});
 document.body.appendChild(display.getContainer());
 document.body.appendChild(text_display.getContainer());
 
@@ -62,9 +62,12 @@ function createConsole(d: ROT.Display): Console {
     },
     update: function() {
       d.clear();
-      this.lines.reverse().slice(0, 5).forEach( (s, i) => {
-        d.drawText(1, 1 + i, s);
-      });
+      this.lines
+        .reverse()
+        .slice(0, 10)
+        .forEach( (s: string, i: number) => {
+          d.drawText(1, 1 + i, s);
+        });
     }
   }
 }
