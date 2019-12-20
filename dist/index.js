@@ -3680,22 +3680,25 @@ var display = new Display({ width: W, height: H, fontSize: 16 });
 document.body.appendChild(display.getContainer());
 // Map Generation
 var map = new index.Cellular(W, H);
-var mapObj = mapObject();
+var solids = createSolids();
 map.randomize(0.5);
 map.create();
 map.create(function (x, y, wall) {
     wall && display.draw(x, y, "#", "green", "");
-    wall && mapObj.addSolid(x, y);
+    wall && solids.add(x, y);
 });
-function mapObject() {
+function createSolids() {
     return {
         solids: [],
-        addSolid: function (x, y) {
+        add: function (x, y) {
             this.solids.push({ x: x, y: y });
         },
-        isSolid: function (x, y) {
+        is: function (x, y) {
             return this.solids.filter(function (o) { return o.x === x && o.y === y; }).length > 0;
-        }
+        },
+        not: function (x, y) {
+            return this.solids.filter(function (o) { return o.x === x && o.y === y; }).length === 0;
+        },
     };
 }
 // Units
@@ -3709,16 +3712,16 @@ function walk(dir, pl) {
     display.draw(x, y, "", "", "");
     switch (dir) {
         case "left":
-            !mapObj.isSolid(x - 1, y) && pl.x--;
+            solids.not(x - 1, y) && pl.x--;
             break;
         case "right":
-            !mapObj.isSolid(x + 1, y) && pl.x++;
+            solids.not(x + 1, y) && pl.x++;
             break;
         case "down":
-            !mapObj.isSolid(x, y + 1) && pl.y++;
+            solids.not(x, y + 1) && pl.y++;
             break;
         case "up":
-            !mapObj.isSolid(x, y - 1) && pl.y--;
+            solids.not(x, y - 1) && pl.y--;
             break;
     }
     display.draw(player.x, player.y, "@", "red", "");
@@ -3741,4 +3744,3 @@ document.addEventListener("keydown", function (e) {
             return;
     }
 });
-//# sourceMappingURL=index.js.map

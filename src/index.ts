@@ -7,29 +7,33 @@ document.body.appendChild(display.getContainer());
 
 // Map Generation
 const map = new ROT.Map.Cellular(W, H);
-const mapObj = mapObject();
+const solids = createSolids();
 map.randomize(0.5);
 map.create();
 map.create( (x, y, wall) => {
   wall && display.draw(x, y, "#", "green", "");
-  wall && mapObj.addSolid(x, y);
+  wall && solids.add(x, y);
 });
 
 interface Solids {
   solids: {x: number, y: number}[],
-  addSolid: (x: number, y: number) => void,
-  isSolid: (x: number, y: number) => boolean,
+  add: (x: number, y: number) => void,
+  is: (x: number, y: number) => boolean,
+  not: (x: number, y: number) => boolean,
 }
 
-function mapObject(): Solids {
+function createSolids(): Solids {
   return {
     solids: [],
-    addSolid: function(x: number, y: number) {
+    add: function(x: number, y: number) {
       this.solids.push({x, y});
     },
-    isSolid: function(x: number, y: number) {
+    is: function(x: number, y: number) {
       return this.solids.filter( (o: { x: number, y: number}) => o.x === x && o.y === y).length > 0;
-    }
+    },
+    not: function(x: number, y: number) {
+      return this.solids.filter( (o: { x: number, y: number}) => o.x === x && o.y === y).length === 0;
+    },
   }
 }
 
@@ -47,16 +51,16 @@ function walk(dir: "left" | "right" | "up" | "down", pl: { x: number, y: number}
   display.draw(x, y, "", "", "");
   switch (dir) {
     case "left":
-      !mapObj.isSolid(x - 1, y) && pl.x--;
+      solids.not(x - 1, y) && pl.x--;
       break;
     case "right":
-      !mapObj.isSolid(x + 1, y) && pl.x++;
+      solids.not(x + 1, y) && pl.x++;
       break;
     case "down":
-      !mapObj.isSolid(x, y + 1) && pl.y++;
+      solids.not(x, y + 1) && pl.y++;
       break;
     case "up":
-      !mapObj.isSolid(x, y - 1) && pl.y--;
+      solids.not(x, y - 1) && pl.y--;
       break;
   }
   display.draw(player.x, player.y, "@", "red", "");
