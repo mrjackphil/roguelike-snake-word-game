@@ -14,9 +14,15 @@ map.randomize(0.5);
 map.create();
 map.connect(null, 0);
 map.create( (x, y, wall) => {
-  wall && display.draw(x, y, "#", "green", "");
   wall && solids.add(x, y);
+  drawSolids();
 });
+
+function drawSolids() {
+  solids.solids.forEach( s => {
+    display.draw(s.x, s.y, "#", "green", "");
+  })
+}
 
 interface Solids {
   solids: {x: number, y: number}[],
@@ -45,6 +51,12 @@ function createSolids(): Solids {
 const player = {
   x: 0,
   y: 0,
+}
+
+const npc = {
+  id: 0,
+  x: 20,
+  y: 20,
 }
 
 // Actions
@@ -80,6 +92,55 @@ function text(s: string) {
 
 // Movement
 
+function createDrawEvents() {
+  return {
+    events: {},
+    add: function(x: number, y: number, s: string, f: string, b: string) {
+      if (!this.events[x+','+y]) {
+        this.events[x+','+y] = [x, y, [], [], []];
+      }
+
+      s && this.events[x+','+y][2].push(s);
+      f && this.events[x+','+y][3].push(f);
+      b && this.events[x+','+y][4].push(b);
+    },
+    draw: function() {
+      const { events } = this;
+      display.clear();
+      drawSolids();
+      for (const key in events) {
+        if (events.hasOwnProperty(key)) {
+          const e = events[key];
+          display.draw(e[0], e[1], e[2], e[3], e[4]);
+        }
+      }
+      this.events = {};
+    }
+  }
+};
+
+const drawEvents = createDrawEvents();
+
+function pathF(x: number, y: number) {
+  return solids.not(x, y);
+}
+
+function npcMove(n: {x: number, y: number}) {
+  if ( solids.is(n.x, n.y) ) {
+    n.x++;
+    n.y++;
+    npcMove(n);
+  } else {
+    // display.draw(n.x, n.y, "N", "yellow", "");
+    drawEvents.add(n.x, n.y, "N", "yellow", "");
+    const astar = new ROT.Path.AStar(player.x, player.y, pathF);
+    astar.compute(n.x, n.y, (x, y) => {
+      // display.draw(x, y, null, "", "rgb(133, 133, 133, 0.5)")
+      drawEvents.add(x, y, "", "", "rgb(133, 133, 133, 0.5)");
+    });
+  }
+}
+
 function walk(dir: "left" | "right" | "up" | "down", pl: { x: number, y: number}) {
   const {x, y} = pl;
   display.draw(x, y, "", "", "");
@@ -97,8 +158,11 @@ function walk(dir: "left" | "right" | "up" | "down", pl: { x: number, y: number}
       solids.not(x, y - 1) && pl.y--;
       break;
   }
-  display.draw(player.x, player.y, "@", "red", "");
+  // display.draw(player.x, player.y, "@", "red", "");
+  drawEvents.add(player.x, player.y, "@", "red", "");
+  npcMove(npc);
   text(`you walked at ${pl.x}, ${pl.y}`);
+  drawEvents.draw();
 }
 
 // Input handling
