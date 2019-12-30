@@ -3934,11 +3934,12 @@ document.body.appendChild(display.getContainer());
 document.body.appendChild(text_display.getContainer());
 // Units
 var player = {
+    id: 0,
     x: 0,
     y: 0,
 };
 var npc = {
-    id: 0,
+    id: 1,
     x: 20,
     y: 20,
 };
@@ -4016,7 +4017,7 @@ function createDrawEvents(d) {
         }
     };
 }
-function createCharController(s, dEv) {
+function createCharController(d, s, dEv) {
     return {
         walk: function (dir, pl) {
             var x = pl.x, y = pl.y;
@@ -4029,7 +4030,7 @@ function createCharController(s, dEv) {
             var checks = function (d) {
                 return isWalkable.apply(void 0, dOptions[d]);
             };
-            display.draw(x, y, "", "", "");
+            d.draw(x, y, "", "", "");
             switch (dir) {
                 case "left":
                     checks(dir) && pl.x--;
@@ -4044,10 +4045,10 @@ function createCharController(s, dEv) {
                     checks(dir) && pl.y--;
                     break;
             }
-            drawEvents.add(player.x, player.y, "@", "red", "");
+            dEv.add(pl.x, pl.y, "@", "red", "");
             npcMove(npc);
             sendLog("you walked at " + pl.x + ", " + pl.y);
-            drawEvents.draw();
+            dEv.draw();
         }
     };
 }
@@ -4064,7 +4065,7 @@ var log = createConsole(text_display);
 var sendLog = createLogger(log);
 var drawEvents = createDrawEvents(display);
 var solids = createSolids();
-var char = createCharController();
+var char = createCharController(display, solids, drawEvents);
 var notEdge = createEdgeChecker(0, 0, W, H);
 var isWalkable = _pathF([solids.not.bind(solids), notEdge]);
 // Map Generation
@@ -4110,4 +4111,3 @@ document.addEventListener("keydown", function (e) {
             return;
     }
 });
-//# sourceMappingURL=index.js.map

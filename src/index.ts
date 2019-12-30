@@ -9,18 +9,24 @@ document.body.appendChild(text_display.getContainer());
 
 // Units
 
-const player = {
+const player: Char = {
+  id: 0,
   x: 0,
   y: 0,
 }
 
-const npc = {
-  id: 0,
+const npc: Char = {
+  id: 1,
   x: 20,
   y: 20,
 }
 
 // Types
+interface Char {
+  id: number;
+  x: number;
+  y: number;
+}
 interface Console {
   lines: string[],
   addLine: (s: string) => void;
@@ -122,11 +128,11 @@ function createDrawEvents(d: ROT.Display): DrawEvent {
   }
 };
 
-function createCharController(s: Solids, dEv: DrawEvent) {
+function createCharController(d: ROT.Display, s: Solids, dEv: DrawEvent) {
   return {
     walk: function (dir: "left" | "right" | "up" | "down", pl: { x: number, y: number}) {
       const {x, y} = pl;
-      const dOptions: { [k: string]: [number, number ] } = {
+      const dOptions: { [k: string]: [number, number] } = {
         "left"  : [ x - 1, y ],
         "right" : [ x + 1, y ],
         "up"    : [ x, y - 1 ],
@@ -135,7 +141,7 @@ function createCharController(s: Solids, dEv: DrawEvent) {
       const checks = (d: string): boolean =>
         isWalkable(...dOptions[d]);
 
-      display.draw(x, y, "", "", "");
+      d.draw(x, y, "", "", "");
 
       switch (dir) {
         case "left":
@@ -151,10 +157,10 @@ function createCharController(s: Solids, dEv: DrawEvent) {
           checks(dir) && pl.y--;
           break;
       }
-      drawEvents.add(player.x, player.y, "@", "red", "");
+      dEv.add(pl.x, pl.y, "@", "red", "");
       npcMove(npc);
       sendLog(`you walked at ${pl.x}, ${pl.y}`);
-      drawEvents.draw();
+      dEv.draw();
     }
   }
 }
@@ -177,7 +183,7 @@ const log = createConsole(text_display);
 const sendLog = createLogger(log);
 const drawEvents = createDrawEvents(display);
 const solids = createSolids();
-const char = createCharController(solids, drawEvents);
+const char = createCharController(display, solids, drawEvents);
 const notEdge = createEdgeChecker(0, 0, W, H);
 const isWalkable = _pathF([solids.not.bind(solids), notEdge]);
 
