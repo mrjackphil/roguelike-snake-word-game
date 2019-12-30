@@ -3970,10 +3970,15 @@ function getQuery(key) {
         .map(function (s) { return msgValue(s); })
         .filter(function (e) { return e; })[0];
 }
+function b64DecodeUnicode(str) {
+    return decodeURIComponent(Array.prototype.map.call(atob(str), function (c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join(''));
+}
 var Decoder = /** @class */ (function () {
     function Decoder(s) {
         this.value = "";
-        this.value = atob(s);
+        this.value = b64DecodeUnicode(s);
     }
     return Decoder;
 }());

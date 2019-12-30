@@ -79,10 +79,16 @@ function getQuery(key: string) {
     .filter( e => e )[0];
 }
 
+function b64DecodeUnicode(str: string) {
+  return decodeURIComponent(Array.prototype.map.call(atob(str), function(c) {
+      return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
+  }).join(''))
+}
+
 class Decoder {
   value: string = "";
   constructor(s: string) {
-    this.value = atob(s);
+    this.value = b64DecodeUnicode(s);
   }
 }
 
