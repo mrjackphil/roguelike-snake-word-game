@@ -3942,6 +3942,20 @@ var npc = {
     x: 20,
     y: 20,
 };
+// Utils
+function drawSolids() {
+    solids.solids.forEach(function (s) {
+        display.draw(s.x, s.y, "#", "green", "");
+    });
+}
+function text(s) {
+    log.addLine(Util.capitalize(s));
+}
+function _pathF() {
+    return function (x, y) {
+        return solids.not(x, y) && notEdge(x, y);
+    };
+}
 // Creators
 function createSolids() {
     return {
@@ -4043,21 +4057,13 @@ function createEdgeChecker(minx, miny, maxx, maxy) {
             && y >= miny;
     };
 }
-// Utils
-function drawSolids() {
-    solids.solids.forEach(function (s) {
-        display.draw(s.x, s.y, "#", "green", "");
-    });
-}
-function text(s) {
-    log.addLine(Util.capitalize(s));
-}
 // Initalization
 var log = createConsole(text_display);
 var drawEvents = createDrawEvents(display);
 var solids = createSolids();
 var char = createCharController();
 var notEdge = createEdgeChecker(0, 0, W, H);
+var pathF = _pathF();
 // Map Generation
 var map = new index.Cellular(W, H);
 map.randomize(0.5);
@@ -4069,9 +4075,6 @@ map.connect(function (x, y, wall) {
     drawSolids();
 }, 0, null);
 // Movement
-function pathF(x, y) {
-    return solids.not(x, y) && notEdge(x, y);
-}
 function npcMove(n) {
     if (!pathF(n.x, n.y)) {
         n.x = Math.round(RNG$1.getNormal(0, W));

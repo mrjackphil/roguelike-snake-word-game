@@ -41,6 +41,23 @@ interface DrawEvent {
 
 }
 
+// Utils
+function drawSolids() {
+  solids.solids.forEach( s => {
+    display.draw(s.x, s.y, "#", "green", "");
+  })
+}
+
+function text(s: string) {
+  log.addLine(ROT.Util.capitalize(s));
+}
+
+function _pathF() {
+  return function(x: number, y: number) {
+    return solids.not(x, y) && notEdge(x, y);
+  }
+}
+
 // Creators
 function createSolids(): Solids {
   return {
@@ -153,22 +170,13 @@ function createEdgeChecker(
     && y >= miny
 }
 
-// Utils
-function drawSolids() {
-  solids.solids.forEach( s => {
-    display.draw(s.x, s.y, "#", "green", "");
-  })
-}
-
-function text(s: string) {
-  log.addLine(ROT.Util.capitalize(s));
-}
 // Initalization
 const log = createConsole(text_display);
 const drawEvents = createDrawEvents(display);
 const solids = createSolids();
 const char = createCharController(solids, drawEvents);
 const notEdge = createEdgeChecker(0, 0, W, H);
+const pathF = _pathF();
 
 // Map Generation
 const map = new ROT.Map.Cellular(W, H);
@@ -182,10 +190,6 @@ map.connect( (x, y, wall) => {
 }, 0, null);
 
 // Movement
-function pathF(x: number, y: number) {
-  return solids.not(x, y) && notEdge(x, y);
-}
-
 function npcMove(n: {x: number, y: number}) {
   if ( !pathF(n.x, n.y) ) {
     n.x = Math.round(ROT.RNG.getNormal(0, W));
