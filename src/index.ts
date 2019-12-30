@@ -42,7 +42,7 @@ interface Solids {
 
 interface DrawEvent {
   events: { [key: string]: string },
-  add: (x: number, y: number, s: string, f: string, b: string) => void;
+  add: ROT.Display["draw"];
   draw: () => void;
 
 }
@@ -145,6 +145,7 @@ function createCharController(d: ROT.Display, dEv: DrawEvent) {
       const checks = (d: string): boolean =>
         canWalkFunc(...dOptions[d]);
 
+      // Remove position before move
       d.draw(x, y, "", "", "");
 
       switch (dir) {

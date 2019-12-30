@@ -4030,6 +4030,7 @@ function createCharController(d, dEv) {
             var checks = function (d) {
                 return canWalkFunc.apply(void 0, dOptions[d]);
             };
+            // Remove position before move
             d.draw(x, y, "", "", "");
             switch (dir) {
                 case "left":
@@ -4111,3 +4112,4 @@ document.addEventListener("keydown", function (e) {
             return;
     }
 });
+//# sourceMappingURL=index.js.map
