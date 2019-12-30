@@ -114,7 +114,7 @@ function createCharController(s: Solids, dEv: DrawEvent) {
         "down"  : [ x, y + 1 ],
       };
       const checks = (d: string): boolean =>
-        solids.not(...dOptions[d]) && notEdge(...dOptions[d]);
+        pathF(...dOptions[d]);
 
       display.draw(x, y, "", "", "");
 

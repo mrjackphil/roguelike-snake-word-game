@@ -4011,7 +4011,7 @@ function createCharController(s, dEv) {
                 "down": [x, y + 1],
             };
             var checks = function (d) {
-                return solids.not.apply(solids, dOptions[d]) && notEdge.apply(void 0, dOptions[d]);
+                return pathF.apply(void 0, dOptions[d]);
             };
             display.draw(x, y, "", "", "");
             switch (dir) {
