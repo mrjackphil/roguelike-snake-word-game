@@ -3954,7 +3954,7 @@ function createLogger(l) {
         l.addLine(Util.capitalize(s));
     };
 }
-function _pathF(checks) {
+function createPathCheckFunction(checks) {
     return function (x, y) {
         return checks.map(function (e) { return e(x, y); }).every(function (e) { return e === true; });
     };
@@ -4017,9 +4017,9 @@ function createDrawEvents(d) {
         }
     };
 }
-function createCharController(d, s, dEv) {
+function createCharController(d, dEv) {
     return {
-        walk: function (dir, pl) {
+        walk: function (dir, pl, canWalkFunc) {
             var x = pl.x, y = pl.y;
             var dOptions = {
                 "left": [x - 1, y],
@@ -4028,7 +4028,7 @@ function createCharController(d, s, dEv) {
                 "down": [x, y + 1],
             };
             var checks = function (d) {
-                return isWalkable.apply(void 0, dOptions[d]);
+                return canWalkFunc.apply(void 0, dOptions[d]);
             };
             d.draw(x, y, "", "", "");
             switch (dir) {
@@ -4065,9 +4065,9 @@ var log = createConsole(text_display);
 var sendLog = createLogger(log);
 var drawEvents = createDrawEvents(display);
 var solids = createSolids();
-var char = createCharController(display, solids, drawEvents);
+var char = createCharController(display, drawEvents);
 var notEdge = createEdgeChecker(0, 0, W, H);
-var isWalkable = _pathF([solids.not.bind(solids), notEdge]);
+var isWalkable = createPathCheckFunction([solids.not.bind(solids), notEdge]);
 // Map Generation
 var map = new index.Cellular(W, H);
 map.randomize(0.5);
@@ -4098,16 +4098,16 @@ document.addEventListener("keydown", function (e) {
     var _a = KEYS, VK_W = _a.VK_W, VK_S = _a.VK_S, VK_A = _a.VK_A, VK_D = _a.VK_D;
     switch (e.keyCode) {
         case VK_W:
-            char.walk("up", player);
+            char.walk("up", player, isWalkable);
             return;
         case VK_A:
-            char.walk("left", player);
+            char.walk("left", player, isWalkable);
             return;
         case VK_D:
-            char.walk("right", player);
+            char.walk("right", player, isWalkable);
             return;
         case VK_S:
-            char.walk("down", player);
+            char.walk("down", player, isWalkable);
             return;
     }
 });
