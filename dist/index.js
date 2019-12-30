@@ -3944,8 +3944,8 @@ var npc = {
     y: 20,
 };
 // Utils
-function drawSolids() {
-    solids.solids.forEach(function (s) {
+function drawSolids(s) {
+    s.solids.forEach(function (s) {
         display.draw(s.x, s.y, "#", "green", "");
     });
 }
@@ -4006,7 +4006,7 @@ function createDrawEvents(d) {
         draw: function () {
             var events = this.events;
             d.clear();
-            drawSolids();
+            drawSolids(solids);
             for (var key in events) {
                 if (events.hasOwnProperty(key)) {
                     var e = events[key];
@@ -4076,7 +4076,7 @@ map.connect(null, 0);
 map.create();
 map.connect(function (x, y, wall) {
     wall && solids.add(x, y);
-    drawSolids();
+    drawSolids(solids);
 }, 0, null);
 // Movement
 function npcMove(n) {

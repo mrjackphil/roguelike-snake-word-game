@@ -48,8 +48,8 @@ interface DrawEvent {
 }
 
 // Utils
-function drawSolids() {
-  solids.solids.forEach( s => {
+function drawSolids(s: Solids) {
+  s.solids.forEach( s => {
     display.draw(s.x, s.y, "#", "green", "");
   })
 }
@@ -116,7 +116,7 @@ function createDrawEvents(d: ROT.Display): DrawEvent {
     draw: function() {
       const { events } = this;
       d.clear();
-      drawSolids();
+      drawSolids(solids);
       for (const key in events) {
         if (events.hasOwnProperty(key)) {
           const e = events[key];
@@ -199,7 +199,7 @@ map.connect(null, 0);
 map.create();
 map.connect( (x, y, wall) => {
   wall && solids.add(x, y);
-  drawSolids();
+  drawSolids(solids);
 }, 0, null);
 
 // Movement
