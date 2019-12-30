@@ -4084,6 +4084,10 @@ function createCharController(d, dEv) {
                     nCounter.add();
                 }
                 npc.icon = nDecoder.value[nCounter.i];
+                generateMap();
+                while (!canWalkFunc(pl.x, pl.y)) {
+                    generateMap();
+                }
                 npcRandomMove(npc);
                 sendLog("" + nDecoder.value.slice(0, nCounter.i));
             }
@@ -4114,15 +4118,19 @@ var char = createCharController(display, drawEvents);
 var notEdge = createEdgeChecker(0, 0, W, H);
 var isWalkable = createPathCheckFunction([solids.not.bind(solids), notEdge]);
 // Map Generation
-var map = new index.Cellular(W, H);
-map.randomize(0.5);
-map.create();
-map.connect(null, 0);
-map.create();
-map.connect(function (x, y, wall) {
-    wall && solids.add(x, y);
-    drawSolids(solids);
-}, 0, null);
+function generateMap() {
+    var map = new index.Cellular(W, H);
+    solids.solids = [];
+    map.randomize(0.5);
+    map.create();
+    map.connect(null, 0);
+    map.create();
+    map.connect(function (x, y, wall) {
+        wall && solids.add(x, y);
+        drawSolids(solids);
+    }, 0, null);
+}
+generateMap();
 // Movement
 function npcTick(n) {
     if (isWalkable(n.x, n.y)) {

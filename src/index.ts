@@ -204,6 +204,10 @@ function createCharController(d: ROT.Display, dEv: DrawEvent) {
         }
 
         npc.icon = nDecoder.value[nCounter.i];
+        generateMap();
+        while (!canWalkFunc(pl.x, pl.y)) {
+          generateMap();
+        }
         npcRandomMove(npc);
         sendLog(`${nDecoder.value.slice(0, nCounter.i)}`);
       }
@@ -242,15 +246,19 @@ const notEdge = createEdgeChecker(0, 0, W, H);
 const isWalkable = createPathCheckFunction([solids.not.bind(solids), notEdge]);
 
 // Map Generation
-const map = new ROT.Map.Cellular(W, H);
-map.randomize(0.5);
-map.create();
-map.connect(null, 0);
-map.create();
-map.connect( (x, y, wall) => {
-  wall && solids.add(x, y);
-  drawSolids(solids);
-}, 0, null);
+function generateMap() {
+  const map = new ROT.Map.Cellular(W, H);
+  solids.solids = [];
+  map.randomize(0.5);
+  map.create();
+  map.connect(null, 0);
+  map.create();
+  map.connect( (x, y, wall) => {
+    wall && solids.add(x, y);
+    drawSolids(solids);
+  }, 0, null);
+}
+generateMap();
 
 // Movement
 function npcTick(n: Char) {
