@@ -52,9 +52,9 @@ function text(s: string) {
   log.addLine(ROT.Util.capitalize(s));
 }
 
-function _pathF() {
+function _pathF(checks: Array<(x: number, y: number) => boolean>) {
   return function(x: number, y: number) {
-    return solids.not(x, y) && notEdge(x, y);
+    return checks.map( e => e(x,y) ).every( e => e === true );
   }
 }
 
@@ -131,7 +131,7 @@ function createCharController(s: Solids, dEv: DrawEvent) {
         "down"  : [ x, y + 1 ],
       };
       const checks = (d: string): boolean =>
-        pathF(...dOptions[d]);
+        isWalkable(...dOptions[d]);
 
       display.draw(x, y, "", "", "");
 
@@ -176,7 +176,7 @@ const drawEvents = createDrawEvents(display);
 const solids = createSolids();
 const char = createCharController(solids, drawEvents);
 const notEdge = createEdgeChecker(0, 0, W, H);
-const pathF = _pathF();
+const isWalkable = _pathF([solids.not.bind(solids), notEdge]);
 
 // Map Generation
 const map = new ROT.Map.Cellular(W, H);
@@ -191,16 +191,16 @@ map.connect( (x, y, wall) => {
 
 // Movement
 function npcMove(n: {x: number, y: number}) {
-  if ( !pathF(n.x, n.y) ) {
-    n.x = Math.round(ROT.RNG.getNormal(0, W));
-    n.y = Math.round(ROT.RNG.getNormal(0, H));
-    npcMove(n);
-  } else {
+  if ( isWalkable(n.x, n.y) ) {
     drawEvents.add(n.x, n.y, "N", "yellow", "");
-    const astar = new ROT.Path.AStar(player.x, player.y, pathF, {topology: 4});
+    const astar = new ROT.Path.AStar(player.x, player.y, isWalkable, {topology: 4});
     astar.compute(n.x, n.y, (x, y) => {
       drawEvents.add(x, y, "", "", "rgb(133, 133, 133, 0.5)");
     });
+  } else {
+    n.x = Math.round(ROT.RNG.getNormal(0, W));
+    n.y = Math.round(ROT.RNG.getNormal(0, H));
+    npcMove(n);
   }
 }
 

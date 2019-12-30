@@ -3951,9 +3951,9 @@ function drawSolids() {
 function text(s) {
     log.addLine(Util.capitalize(s));
 }
-function _pathF() {
+function _pathF(checks) {
     return function (x, y) {
-        return solids.not(x, y) && notEdge(x, y);
+        return checks.map(function (e) { return e(x, y); }).every(function (e) { return e === true; });
     };
 }
 // Creators
@@ -4025,7 +4025,7 @@ function createCharController(s, dEv) {
                 "down": [x, y + 1],
             };
             var checks = function (d) {
-                return pathF.apply(void 0, dOptions[d]);
+                return isWalkable.apply(void 0, dOptions[d]);
             };
             display.draw(x, y, "", "", "");
             switch (dir) {
@@ -4063,7 +4063,7 @@ var drawEvents = createDrawEvents(display);
 var solids = createSolids();
 var char = createCharController();
 var notEdge = createEdgeChecker(0, 0, W, H);
-var pathF = _pathF();
+var isWalkable = _pathF([solids.not.bind(solids), notEdge]);
 // Map Generation
 var map = new index.Cellular(W, H);
 map.randomize(0.5);
@@ -4076,17 +4076,17 @@ map.connect(function (x, y, wall) {
 }, 0, null);
 // Movement
 function npcMove(n) {
-    if (!pathF(n.x, n.y)) {
-        n.x = Math.round(RNG$1.getNormal(0, W));
-        n.y = Math.round(RNG$1.getNormal(0, H));
-        npcMove(n);
-    }
-    else {
+    if (isWalkable(n.x, n.y)) {
         drawEvents.add(n.x, n.y, "N", "yellow", "");
-        var astar = new index$1.AStar(player.x, player.y, pathF, { topology: 4 });
+        var astar = new index$1.AStar(player.x, player.y, isWalkable, { topology: 4 });
         astar.compute(n.x, n.y, function (x, y) {
             drawEvents.add(x, y, "", "", "rgb(133, 133, 133, 0.5)");
         });
+    }
+    else {
+        n.x = Math.round(RNG$1.getNormal(0, W));
+        n.y = Math.round(RNG$1.getNormal(0, H));
+        npcMove(n);
     }
 }
 // Input handling
