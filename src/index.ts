@@ -147,9 +147,9 @@ function createEdgeChecker(
   maxy: number
 ) {
   return (x: number, y: number) =>
-       x <= maxx
+       x <= maxx - 1
     && x >= minx 
-    && y <= maxy
+    && y <= maxy - 1
     && y >= miny
 }
 
@@ -175,10 +175,11 @@ const map = new ROT.Map.Cellular(W, H);
 map.randomize(0.5);
 map.create();
 map.connect(null, 0);
-map.create( (x, y, wall) => {
+map.create();
+map.connect( (x, y, wall) => {
   wall && solids.add(x, y);
   drawSolids();
-});
+}, 0, null);
 
 // Movement
 function pathF(x: number, y: number) {
