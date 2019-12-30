@@ -3948,8 +3948,10 @@ function drawSolids() {
         display.draw(s.x, s.y, "#", "green", "");
     });
 }
-function text(s) {
-    log.addLine(Util.capitalize(s));
+function createLogger(l) {
+    return function (s) {
+        l.addLine(Util.capitalize(s));
+    };
 }
 function _pathF(checks) {
     return function (x, y) {
@@ -4044,7 +4046,7 @@ function createCharController(s, dEv) {
             }
             drawEvents.add(player.x, player.y, "@", "red", "");
             npcMove(npc);
-            text("you walked at " + pl.x + ", " + pl.y);
+            sendLog("you walked at " + pl.x + ", " + pl.y);
             drawEvents.draw();
         }
     };
@@ -4059,6 +4061,7 @@ function createEdgeChecker(minx, miny, maxx, maxy) {
 }
 // Initalization
 var log = createConsole(text_display);
+var sendLog = createLogger(log);
 var drawEvents = createDrawEvents(display);
 var solids = createSolids();
 var char = createCharController();
@@ -4107,3 +4110,4 @@ document.addEventListener("keydown", function (e) {
             return;
     }
 });
+//# sourceMappingURL=index.js.map

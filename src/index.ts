@@ -48,8 +48,10 @@ function drawSolids() {
   })
 }
 
-function text(s: string) {
-  log.addLine(ROT.Util.capitalize(s));
+function createLogger(l: Console) {
+  return function(s: string) {
+    l.addLine(ROT.Util.capitalize(s));
+  }
 }
 
 function _pathF(checks: Array<(x: number, y: number) => boolean>) {
@@ -151,7 +153,7 @@ function createCharController(s: Solids, dEv: DrawEvent) {
       }
       drawEvents.add(player.x, player.y, "@", "red", "");
       npcMove(npc);
-      text(`you walked at ${pl.x}, ${pl.y}`);
+      sendLog(`you walked at ${pl.x}, ${pl.y}`);
       drawEvents.draw();
     }
   }
@@ -172,6 +174,7 @@ function createEdgeChecker(
 
 // Initalization
 const log = createConsole(text_display);
+const sendLog = createLogger(log);
 const drawEvents = createDrawEvents(display);
 const solids = createSolids();
 const char = createCharController(solids, drawEvents);
