@@ -45,7 +45,6 @@ interface DrawEvent {
   events: { [key: string]: string },
   add: ROT.Display["draw"];
   draw: () => void;
-
 }
 
 // Utils
@@ -66,6 +65,37 @@ function createPathCheckFunction(checks: Array<(x: number, y: number) => boolean
     return checks.map( e => e(x,y) ).every( e => e === true );
   }
 }
+
+function getQuery(key: string) {
+  const msgValue = (s: string) => {
+    const keyValue = s.split('=');
+    return keyValue[0] === key && keyValue[1];
+  }
+
+  return window.location.search
+    .replace('?', '')
+    .split('&')
+    .map( s => msgValue(s) )
+    .filter( e => e )[0];
+}
+
+class Decoder {
+  value: string = "";
+  constructor(s: string) {
+    this.value = atob(s);
+  }
+}
+
+class Counter {
+  public i: number = 0;
+
+  public add() {
+    this.i = this.i + 1;
+  }
+}
+
+const nCounter = new Counter();
+const nDecoder = new Decoder(getQuery('msg'));
 
 // Creators
 function createSolids(): Solids {
@@ -136,6 +166,7 @@ function createCharController(d: ROT.Display, dEv: DrawEvent) {
       pl: { x: number, y: number},
       canWalkFunc: (x: number, y: number) => boolean
     ) {
+      // Unpure using `nCounter`, `nDecoder`, `npc` variables
       const {x, y} = pl;
       const dOptions: { [k: string]: [number, number] } = {
         "left"  : [ x - 1, y ],
@@ -166,8 +197,15 @@ function createCharController(d: ROT.Display, dEv: DrawEvent) {
       dEv.add(pl.x, pl.y, "@", "red", "");
 
       function collidedWithNPC() {
-        npc.icon = "X";
+        nCounter.add();
+        // Skip whitespaces
+        while (nDecoder.value[nCounter.i] === ' ') {
+          nCounter.add();
+        }
+
+        npc.icon = nDecoder.value[nCounter.i];
         npcRandomMove(npc);
+        sendLog(`${nDecoder.value.slice(0, nCounter.i)}`);
       }
 
       // Unpure usage of `npc` variable
@@ -176,7 +214,6 @@ function createCharController(d: ROT.Display, dEv: DrawEvent) {
       }
       // Unpure usage of `npc` variable
       npcTick(npc);
-      sendLog(`you walked at ${pl.x}, ${pl.y}`);
       dEv.draw();
     }
   }
@@ -218,7 +255,7 @@ map.connect( (x, y, wall) => {
 // Movement
 function npcTick(n: Char) {
   if ( isWalkable(n.x, n.y) ) {
-    drawEvents.add(n.x, n.y, n.icon || "N", "yellow", "");
+    drawEvents.add(n.x, n.y, n.icon || nDecoder.value[0] || "N", "yellow", "");
     const astar = new ROT.Path.AStar(player.x, player.y, isWalkable, {topology: 4});
     astar.compute(n.x, n.y, (x, y) => {
       drawEvents.add(x, y, "", "", "rgb(133, 133, 133, 0.5)");

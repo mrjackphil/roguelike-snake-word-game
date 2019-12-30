@@ -3959,6 +3959,35 @@ function createPathCheckFunction(checks) {
         return checks.map(function (e) { return e(x, y); }).every(function (e) { return e === true; });
     };
 }
+function getQuery(key) {
+    var msgValue = function (s) {
+        var keyValue = s.split('=');
+        return keyValue[0] === key && keyValue[1];
+    };
+    return window.location.search
+        .replace('?', '')
+        .split('&')
+        .map(function (s) { return msgValue(s); })
+        .filter(function (e) { return e; })[0];
+}
+var Decoder = /** @class */ (function () {
+    function Decoder(s) {
+        this.value = "";
+        this.value = atob(s);
+    }
+    return Decoder;
+}());
+var Counter = /** @class */ (function () {
+    function Counter() {
+        this.i = 0;
+    }
+    Counter.prototype.add = function () {
+        this.i = this.i + 1;
+    };
+    return Counter;
+}());
+var nCounter = new Counter();
+var nDecoder = new Decoder(getQuery('msg'));
 // Creators
 function createSolids() {
     return {
@@ -4020,6 +4049,7 @@ function createDrawEvents(d) {
 function createCharController(d, dEv) {
     return {
         walk: function (dir, pl, canWalkFunc) {
+            // Unpure using `nCounter`, `nDecoder`, `npc` variables
             var x = pl.x, y = pl.y;
             var dOptions = {
                 "left": [x - 1, y],
@@ -4048,8 +4078,14 @@ function createCharController(d, dEv) {
             }
             dEv.add(pl.x, pl.y, "@", "red", "");
             function collidedWithNPC() {
-                npc.icon = "X";
+                nCounter.add();
+                // Skip whitespaces
+                while (nDecoder.value[nCounter.i] === ' ') {
+                    nCounter.add();
+                }
+                npc.icon = nDecoder.value[nCounter.i];
                 npcRandomMove(npc);
+                sendLog("" + nDecoder.value.slice(0, nCounter.i));
             }
             // Unpure usage of `npc` variable
             if (pl.x === npc.x && pl.y === npc.y) {
@@ -4057,7 +4093,6 @@ function createCharController(d, dEv) {
             }
             // Unpure usage of `npc` variable
             npcTick(npc);
-            sendLog("you walked at " + pl.x + ", " + pl.y);
             dEv.draw();
         }
     };
@@ -4091,7 +4126,7 @@ map.connect(function (x, y, wall) {
 // Movement
 function npcTick(n) {
     if (isWalkable(n.x, n.y)) {
-        drawEvents.add(n.x, n.y, n.icon || "N", "yellow", "");
+        drawEvents.add(n.x, n.y, n.icon || nDecoder.value[0] || "N", "yellow", "");
         var astar = new index$1.AStar(player.x, player.y, isWalkable, { topology: 4 });
         astar.compute(n.x, n.y, function (x, y) {
             drawEvents.add(x, y, "", "", "rgb(133, 133, 133, 0.5)");
