@@ -4047,7 +4047,16 @@ function createCharController(d, dEv) {
                     break;
             }
             dEv.add(pl.x, pl.y, "@", "red", "");
-            npcMove(npc);
+            function collidedWithNPC() {
+                npc.icon = "X";
+                npcRandomMove(npc);
+            }
+            // Unpure usage of `npc` variable
+            if (pl.x === npc.x && pl.y === npc.y) {
+                collidedWithNPC();
+            }
+            // Unpure usage of `npc` variable
+            npcTick(npc);
             sendLog("you walked at " + pl.x + ", " + pl.y);
             dEv.draw();
         }
@@ -4080,19 +4089,22 @@ map.connect(function (x, y, wall) {
     drawSolids(solids);
 }, 0, null);
 // Movement
-function npcMove(n) {
+function npcTick(n) {
     if (isWalkable(n.x, n.y)) {
-        drawEvents.add(n.x, n.y, "N", "yellow", "");
+        drawEvents.add(n.x, n.y, n.icon || "N", "yellow", "");
         var astar = new index$1.AStar(player.x, player.y, isWalkable, { topology: 4 });
         astar.compute(n.x, n.y, function (x, y) {
             drawEvents.add(x, y, "", "", "rgb(133, 133, 133, 0.5)");
         });
     }
     else {
-        n.x = Math.round(RNG$1.getNormal(0, W));
-        n.y = Math.round(RNG$1.getNormal(0, H));
-        npcMove(n);
+        npcRandomMove(n);
+        npcTick(n);
     }
+}
+function npcRandomMove(n) {
+    n.x = Math.round(RNG$1.getNormal(0, W));
+    n.y = Math.round(RNG$1.getNormal(0, H));
 }
 // Input handling
 document.addEventListener("keydown", function (e) {
@@ -4112,4 +4124,3 @@ document.addEventListener("keydown", function (e) {
             return;
     }
 });
-//# sourceMappingURL=index.js.map

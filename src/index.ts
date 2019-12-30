@@ -26,6 +26,7 @@ interface Char {
   id: number;
   x: number;
   y: number;
+  icon?: string;
 }
 interface Console {
   lines: string[],
@@ -163,7 +164,18 @@ function createCharController(d: ROT.Display, dEv: DrawEvent) {
           break;
       }
       dEv.add(pl.x, pl.y, "@", "red", "");
-      npcMove(npc);
+
+      function collidedWithNPC() {
+        npc.icon = "X";
+        npcRandomMove(npc);
+      }
+
+      // Unpure usage of `npc` variable
+      if (pl.x === npc.x && pl.y === npc.y) {
+        collidedWithNPC();
+      }
+      // Unpure usage of `npc` variable
+      npcTick(npc);
       sendLog(`you walked at ${pl.x}, ${pl.y}`);
       dEv.draw();
     }
@@ -204,18 +216,22 @@ map.connect( (x, y, wall) => {
 }, 0, null);
 
 // Movement
-function npcMove(n: {x: number, y: number}) {
+function npcTick(n: Char) {
   if ( isWalkable(n.x, n.y) ) {
-    drawEvents.add(n.x, n.y, "N", "yellow", "");
+    drawEvents.add(n.x, n.y, n.icon || "N", "yellow", "");
     const astar = new ROT.Path.AStar(player.x, player.y, isWalkable, {topology: 4});
     astar.compute(n.x, n.y, (x, y) => {
       drawEvents.add(x, y, "", "", "rgb(133, 133, 133, 0.5)");
     });
   } else {
+    npcRandomMove(n);
+    npcTick(n);
+  }
+}
+
+function npcRandomMove(n: Char) {
     n.x = Math.round(ROT.RNG.getNormal(0, W));
     n.y = Math.round(ROT.RNG.getNormal(0, H));
-    npcMove(n);
-  }
 }
 
 // Input handling
