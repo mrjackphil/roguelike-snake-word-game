@@ -4004,19 +4004,28 @@ function createCharController(s, dEv) {
     return {
         walk: function (dir, pl) {
             var x = pl.x, y = pl.y;
+            var dOptions = {
+                "left": [x - 1, y],
+                "right": [x + 1, y],
+                "up": [x, y - 1],
+                "down": [x, y + 1],
+            };
+            var checks = function (d) {
+                return solids.not.apply(solids, dOptions[d]) && notEdge.apply(void 0, dOptions[d]);
+            };
             display.draw(x, y, "", "", "");
             switch (dir) {
                 case "left":
-                    solids.not(x - 1, y) && pl.x--;
+                    checks(dir) && pl.x--;
                     break;
                 case "right":
-                    solids.not(x + 1, y) && pl.x++;
+                    checks(dir) && pl.x++;
                     break;
                 case "down":
-                    solids.not(x, y + 1) && pl.y++;
+                    checks(dir) && pl.y++;
                     break;
                 case "up":
-                    solids.not(x, y - 1) && pl.y--;
+                    checks(dir) && pl.y--;
                     break;
             }
             drawEvents.add(player.x, player.y, "@", "red", "");
@@ -4024,6 +4033,14 @@ function createCharController(s, dEv) {
             text("you walked at " + pl.x + ", " + pl.y);
             drawEvents.draw();
         }
+    };
+}
+function createEdgeChecker(minx, miny, maxx, maxy) {
+    return function (x, y) {
+        return x <= maxx
+            && x >= minx
+            && y <= maxy
+            && y >= miny;
     };
 }
 // Utils
@@ -4040,6 +4057,7 @@ var log = createConsole(text_display);
 var drawEvents = createDrawEvents(display);
 var solids = createSolids();
 var char = createCharController();
+var notEdge = createEdgeChecker(0, 0, W, H);
 // Map Generation
 var map = new index.Cellular(W, H);
 map.randomize(0.5);
@@ -4085,4 +4103,3 @@ document.addEventListener("keydown", function (e) {
             return;
     }
 });
-//# sourceMappingURL=index.js.map

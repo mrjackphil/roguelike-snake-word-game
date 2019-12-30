@@ -107,19 +107,29 @@ function createCharController(s: Solids, dEv: DrawEvent) {
   return {
     walk: function (dir: "left" | "right" | "up" | "down", pl: { x: number, y: number}) {
       const {x, y} = pl;
+      const dOptions: { [k: string]: [number, number ] } = {
+        "left"  : [ x - 1, y ],
+        "right" : [ x + 1, y ],
+        "up"    : [ x, y - 1 ],
+        "down"  : [ x, y + 1 ],
+      };
+      const checks = (d: string): boolean =>
+        solids.not(...dOptions[d]) && notEdge(...dOptions[d]);
+
       display.draw(x, y, "", "", "");
+
       switch (dir) {
         case "left":
-          solids.not(x - 1, y) && pl.x--;
+          checks(dir) && pl.x--;
           break;
         case "right":
-          solids.not(x + 1, y) && pl.x++;
+          checks(dir) && pl.x++;
           break;
         case "down":
-          solids.not(x, y + 1) && pl.y++;
+          checks(dir) && pl.y++;
           break;
         case "up":
-          solids.not(x, y - 1) && pl.y--;
+          checks(dir) && pl.y--;
           break;
       }
       drawEvents.add(player.x, player.y, "@", "red", "");
@@ -128,6 +138,19 @@ function createCharController(s: Solids, dEv: DrawEvent) {
       drawEvents.draw();
     }
   }
+}
+
+function createEdgeChecker(
+  minx: number,
+  miny: number,
+  maxx: number,
+  maxy: number
+) {
+  return (x: number, y: number) =>
+       x <= maxx
+    && x >= minx 
+    && y <= maxy
+    && y >= miny
 }
 
 // Utils
@@ -145,6 +168,7 @@ const log = createConsole(text_display);
 const drawEvents = createDrawEvents(display);
 const solids = createSolids();
 const char = createCharController(solids, drawEvents);
+const notEdge = createEdgeChecker(0, 0, W, H);
 
 // Map Generation
 const map = new ROT.Map.Cellular(W, H);
