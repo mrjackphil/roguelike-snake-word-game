@@ -148,7 +148,7 @@ function createEdgeChecker(
 ) {
   return (x: number, y: number) =>
        x <= maxx - 1
-    && x >= minx 
+    && x >= minx
     && y <= maxy - 1
     && y >= miny
 }
@@ -183,17 +183,17 @@ map.connect( (x, y, wall) => {
 
 // Movement
 function pathF(x: number, y: number) {
-  return solids.not(x, y);
+  return solids.not(x, y) && notEdge(x, y);
 }
 
 function npcMove(n: {x: number, y: number}) {
-  if ( solids.is(n.x, n.y) ) {
-    n.x++;
-    n.y++;
+  if ( !pathF(n.x, n.y) ) {
+    n.x = Math.round(ROT.RNG.getNormal(0, W));
+    n.y = Math.round(ROT.RNG.getNormal(0, H));
     npcMove(n);
   } else {
     drawEvents.add(n.x, n.y, "N", "yellow", "");
-    const astar = new ROT.Path.AStar(player.x, player.y, pathF);
+    const astar = new ROT.Path.AStar(player.x, player.y, pathF, {topology: 4});
     astar.compute(n.x, n.y, (x, y) => {
       drawEvents.add(x, y, "", "", "rgb(133, 133, 133, 0.5)");
     });

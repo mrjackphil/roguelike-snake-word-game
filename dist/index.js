@@ -4070,17 +4070,17 @@ map.connect(function (x, y, wall) {
 }, 0, null);
 // Movement
 function pathF(x, y) {
-    return solids.not(x, y);
+    return solids.not(x, y) && notEdge(x, y);
 }
 function npcMove(n) {
-    if (solids.is(n.x, n.y)) {
-        n.x++;
-        n.y++;
+    if (!pathF(n.x, n.y)) {
+        n.x = Math.round(RNG$1.getNormal(0, W));
+        n.y = Math.round(RNG$1.getNormal(0, H));
         npcMove(n);
     }
     else {
         drawEvents.add(n.x, n.y, "N", "yellow", "");
-        var astar = new index$1.AStar(player.x, player.y, pathF);
+        var astar = new index$1.AStar(player.x, player.y, pathF, { topology: 4 });
         astar.compute(n.x, n.y, function (x, y) {
             drawEvents.add(x, y, "", "", "rgb(133, 133, 133, 0.5)");
         });
