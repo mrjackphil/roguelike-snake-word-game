@@ -3977,8 +3977,10 @@ function b64DecodeUnicode(str) {
 }
 var Decoder = /** @class */ (function () {
     function Decoder(s) {
-        this.value = "";
-        this.value = b64DecodeUnicode(s);
+        this.value = "You Win!";
+        if (s) {
+            this.value = b64DecodeUnicode(s);
+        }
     }
     return Decoder;
 }());
@@ -4172,3 +4174,4 @@ document.addEventListener("keydown", function (e) {
             return;
     }
 });
+//# sourceMappingURL=index.js.map

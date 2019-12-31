@@ -86,9 +86,11 @@ function b64DecodeUnicode(str: string) {
 }
 
 class Decoder {
-  value: string = "";
+  value: string = "You Win!";
   constructor(s: string) {
-    this.value = b64DecodeUnicode(s);
+    if (s) {
+      this.value = b64DecodeUnicode(s);
+    }
   }
 }
 
