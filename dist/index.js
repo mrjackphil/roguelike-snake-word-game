@@ -3727,203 +3727,6 @@ class Rogue extends Map {
 
 var index = { Arena, Uniform, Cellular, Digger, EllerMaze, DividedMaze, IceyMaze, Rogue };
 
-/**
- * @class Abstract pathfinder
- * @param {int} toX Target X coord
- * @param {int} toY Target Y coord
- * @param {function} passableCallback Callback to determine map passability
- * @param {object} [options]
- * @param {int} [options.topology=8]
- */
-class Path {
-    constructor(toX, toY, passableCallback, options = {}) {
-        this._toX = toX;
-        this._toY = toY;
-        this._passableCallback = passableCallback;
-        this._options = Object.assign({
-            topology: 8
-        }, options);
-        this._dirs = DIRS[this._options.topology];
-        if (this._options.topology == 8) { /* reorder dirs for more aesthetic result (vertical/horizontal first) */
-            this._dirs = [
-                this._dirs[0],
-                this._dirs[2],
-                this._dirs[4],
-                this._dirs[6],
-                this._dirs[1],
-                this._dirs[3],
-                this._dirs[5],
-                this._dirs[7]
-            ];
-        }
-    }
-    _getNeighbors(cx, cy) {
-        let result = [];
-        for (let i = 0; i < this._dirs.length; i++) {
-            let dir = this._dirs[i];
-            let x = cx + dir[0];
-            let y = cy + dir[1];
-            if (!this._passableCallback(x, y)) {
-                continue;
-            }
-            result.push([x, y]);
-        }
-        return result;
-    }
-}
-
-/**
- * @class Simplified Dijkstra's algorithm: all edges have a value of 1
- * @augments ROT.Path
- * @see ROT.Path
- */
-class Dijkstra extends Path {
-    constructor(toX, toY, passableCallback, options) {
-        super(toX, toY, passableCallback, options);
-        this._computed = {};
-        this._todo = [];
-        this._add(toX, toY, null);
-    }
-    /**
-     * Compute a path from a given point
-     * @see ROT.Path#compute
-     */
-    compute(fromX, fromY, callback) {
-        let key = fromX + "," + fromY;
-        if (!(key in this._computed)) {
-            this._compute(fromX, fromY);
-        }
-        if (!(key in this._computed)) {
-            return;
-        }
-        let item = this._computed[key];
-        while (item) {
-            callback(item.x, item.y);
-            item = item.prev;
-        }
-    }
-    /**
-     * Compute a non-cached value
-     */
-    _compute(fromX, fromY) {
-        while (this._todo.length) {
-            let item = this._todo.shift();
-            if (item.x == fromX && item.y == fromY) {
-                return;
-            }
-            let neighbors = this._getNeighbors(item.x, item.y);
-            for (let i = 0; i < neighbors.length; i++) {
-                let neighbor = neighbors[i];
-                let x = neighbor[0];
-                let y = neighbor[1];
-                let id = x + "," + y;
-                if (id in this._computed) {
-                    continue;
-                } /* already done */
-                this._add(x, y, item);
-            }
-        }
-    }
-    _add(x, y, prev) {
-        let obj = {
-            x: x,
-            y: y,
-            prev: prev
-        };
-        this._computed[x + "," + y] = obj;
-        this._todo.push(obj);
-    }
-}
-
-/**
- * @class Simplified A* algorithm: all edges have a value of 1
- * @augments ROT.Path
- * @see ROT.Path
- */
-class AStar extends Path {
-    constructor(toX, toY, passableCallback, options = {}) {
-        super(toX, toY, passableCallback, options);
-        this._todo = [];
-        this._done = {};
-    }
-    /**
-     * Compute a path from a given point
-     * @see ROT.Path#compute
-     */
-    compute(fromX, fromY, callback) {
-        this._todo = [];
-        this._done = {};
-        this._fromX = fromX;
-        this._fromY = fromY;
-        this._add(this._toX, this._toY, null);
-        while (this._todo.length) {
-            let item = this._todo.shift();
-            let id = item.x + "," + item.y;
-            if (id in this._done) {
-                continue;
-            }
-            this._done[id] = item;
-            if (item.x == fromX && item.y == fromY) {
-                break;
-            }
-            let neighbors = this._getNeighbors(item.x, item.y);
-            for (let i = 0; i < neighbors.length; i++) {
-                let neighbor = neighbors[i];
-                let x = neighbor[0];
-                let y = neighbor[1];
-                let id = x + "," + y;
-                if (id in this._done) {
-                    continue;
-                }
-                this._add(x, y, item);
-            }
-        }
-        let item = this._done[fromX + "," + fromY];
-        if (!item) {
-            return;
-        }
-        while (item) {
-            callback(item.x, item.y);
-            item = item.prev;
-        }
-    }
-    _add(x, y, prev) {
-        let h = this._distance(x, y);
-        let obj = {
-            x: x,
-            y: y,
-            prev: prev,
-            g: (prev ? prev.g + 1 : 0),
-            h: h
-        };
-        /* insert into priority queue */
-        let f = obj.g + obj.h;
-        for (let i = 0; i < this._todo.length; i++) {
-            let item = this._todo[i];
-            let itemF = item.g + item.h;
-            if (f < itemF || (f == itemF && h < item.h)) {
-                this._todo.splice(i, 0, obj);
-                return;
-            }
-        }
-        this._todo.push(obj);
-    }
-    _distance(x, y) {
-        switch (this._options.topology) {
-            case 4:
-                return (Math.abs(x - this._fromX) + Math.abs(y - this._fromY));
-            case 6:
-                let dx = Math.abs(x - this._fromX);
-                let dy = Math.abs(y - this._fromY);
-                return dy + Math.max(0, (dx - dy) / 2);
-            case 8:
-                return Math.max(Math.abs(x - this._fromX), Math.abs(y - this._fromY));
-        }
-    }
-}
-
-var index$1 = { Dijkstra, AStar };
-
 const Util = util;
 
 var W = 50;
@@ -4083,7 +3886,7 @@ function createCharController(d, dEv) {
                     checks(dir) && pl.y--;
                     break;
             }
-            dEv.add(pl.x, pl.y, "@", "red", "");
+            dEv.add(pl.x, pl.y, "@", "red", "black");
             function collidedWithNPC() {
                 nCounter.add();
                 // Skip whitespaces
@@ -4142,11 +3945,11 @@ drawSolids(solids);
 // Movement
 function npcTick(n) {
     if (isWalkable(n.x, n.y)) {
-        drawEvents.add(n.x, n.y, n.icon || nDecoder.value[0] || "N", "yellow", "");
-        var astar = new index$1.AStar(player.x, player.y, isWalkable, { topology: 4 });
-        astar.compute(n.x, n.y, function (x, y) {
-            drawEvents.add(x, y, "", "", "rgb(133, 133, 133, 0.5)");
-        });
+        drawEvents.add(n.x, n.y, n.icon || nDecoder.value[0] || "N", "yellow", "black");
+        // const astar = new ROT.Path.AStar(player.x, player.y, isWalkable, {topology: 4});
+        // astar.compute(n.x, n.y, (x, y) => {
+        //   drawEvents.add(x, y, "", "", "rgb(133, 133, 133, 0.5)");
+        // });
     }
     else {
         npcRandomMove(n);
@@ -4185,4 +3988,3 @@ document.addEventListener("keydown", function (e) {
             return;
     }
 });
-//# sourceMappingURL=index.js.map

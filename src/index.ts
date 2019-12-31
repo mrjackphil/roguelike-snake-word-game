@@ -202,7 +202,7 @@ function createCharController(d: ROT.Display, dEv: DrawEvent) {
           checks(dir) && pl.y--;
           break;
       }
-      dEv.add(pl.x, pl.y, "@", "red", "");
+      dEv.add(pl.x, pl.y, "@", "red", "black");
 
       function collidedWithNPC() {
         nCounter.add();
@@ -272,11 +272,11 @@ drawSolids(solids);
 // Movement
 function npcTick(n: Char) {
   if ( isWalkable(n.x, n.y) ) {
-    drawEvents.add(n.x, n.y, n.icon || nDecoder.value[0] || "N", "yellow", "");
-    const astar = new ROT.Path.AStar(player.x, player.y, isWalkable, {topology: 4});
-    astar.compute(n.x, n.y, (x, y) => {
-      drawEvents.add(x, y, "", "", "rgb(133, 133, 133, 0.5)");
-    });
+    drawEvents.add(n.x, n.y, n.icon || nDecoder.value[0] || "N", "yellow", "black");
+    // const astar = new ROT.Path.AStar(player.x, player.y, isWalkable, {topology: 4});
+    // astar.compute(n.x, n.y, (x, y) => {
+    //   drawEvents.add(x, y, "", "", "rgb(133, 133, 133, 0.5)");
+    // });
   } else {
     npcRandomMove(n);
     npcTick(n);
