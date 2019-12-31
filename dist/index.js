@@ -4095,6 +4095,7 @@ function createCharController(d, dEv) {
                 while (!canWalkFunc(pl.x, pl.y)) {
                     generateMap();
                 }
+                drawSolids(solids);
                 npcRandomMove(npc);
                 sendLog("" + nDecoder.value.slice(0, nCounter.i));
             }
@@ -4134,10 +4135,10 @@ function generateMap() {
     map.create();
     map.connect(function (x, y, wall) {
         wall && solids.add(x, y);
-        drawSolids(solids);
     }, 0, null);
 }
 generateMap();
+drawSolids(solids);
 // Movement
 function npcTick(n) {
     if (isWalkable(n.x, n.y)) {
@@ -4184,3 +4185,4 @@ document.addEventListener("keydown", function (e) {
             return;
     }
 });
+//# sourceMappingURL=index.js.map
