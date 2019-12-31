@@ -289,20 +289,33 @@ function npcRandomMove(n: Char) {
 
 // Input handling
 
+let move = "" as "left" | "right" | "up" | "down" | "";
+
+function step() {
+  move && char.walk(move, player, isWalkable);
+  setTimeout(() => window.requestAnimationFrame(step), 50);
+}
+
+window.requestAnimationFrame(step);
+
 document.addEventListener("keydown", (e) => {
   const {VK_W, VK_S, VK_A, VK_D} = ROT.KEYS;
   switch (e.keyCode) {
     case VK_W:
-      char.walk("up", player, isWalkable);
+      // char.walk("up", player, isWalkable);
+      move = "up";
       return;
     case VK_A:
-      char.walk("left", player, isWalkable);
+      // char.walk("left", player, isWalkable);
+      move = "left";
       return;
     case VK_D:
-      char.walk("right", player, isWalkable);
+      // char.walk("right", player, isWalkable);
+      move = "right";
       return;
     case VK_S:
-      char.walk("down", player, isWalkable);
+      // char.walk("down", player, isWalkable);
+      move = "down";
       return;
   }
 });
