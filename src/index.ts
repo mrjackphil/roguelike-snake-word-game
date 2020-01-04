@@ -81,8 +81,9 @@ function getQuery(key: string) {
     .filter( e => e )[0];
 }
 
-function b64Encode(s: string) {
-  return btoa(s);
+function b64EncodeUnicode(s: string) {
+  return btoa(encodeURIComponent(s).replace(/%([0-9A-F]{2})/g,
+  (match, p1) => String.fromCharCode(Number('0x' + p1)) ));
 }
 
 function b64DecodeUnicode(str: string) {
@@ -93,10 +94,16 @@ function b64DecodeUnicode(str: string) {
 
 function createLinkGenerator(h: HTMLElement): [HTMLTextAreaElement, HTMLButtonElement] {
   const textarea = document.createElement('textarea');
+  const div = document.createElement("div");
   const btn = document.createElement("button");
+
   btn.innerHTML = "Generate link";
+  btn.addEventListener('click', () => {
+    div.innerHTML = window.location.origin + "?msg=" + b64EncodeUnicode(textarea.value);
+  });
 
   h.appendChild(textarea);
+  h.appendChild(div);
   h.appendChild(btn);
   return [textarea, btn];
 }

@@ -3775,6 +3775,9 @@ function getQuery(key) {
         .map(function (s) { return msgValue(s); })
         .filter(function (e) { return e; })[0];
 }
+function b64EncodeUnicode(s) {
+    return btoa(encodeURIComponent(s).replace(/%([0-9A-F]{2})/g, function (match, p1) { return String.fromCharCode(Number('0x' + p1)); }));
+}
 function b64DecodeUnicode(str) {
     return decodeURIComponent(Array.prototype.map.call(atob(str), function (c) {
         return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
@@ -3782,9 +3785,14 @@ function b64DecodeUnicode(str) {
 }
 function createLinkGenerator(h) {
     var textarea = document.createElement('textarea');
+    var div = document.createElement("div");
     var btn = document.createElement("button");
     btn.innerHTML = "Generate link";
+    btn.addEventListener('click', function () {
+        div.innerHTML = window.location.origin + "?msg=" + b64EncodeUnicode(textarea.value);
+    });
     h.appendChild(textarea);
+    h.appendChild(div);
     h.appendChild(btn);
     return [textarea, btn];
 }
