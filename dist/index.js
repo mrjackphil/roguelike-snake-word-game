@@ -3729,10 +3729,11 @@ var index = { Arena, Uniform, Cellular, Digger, EllerMaze, DividedMaze, IceyMaze
 
 const Util = util;
 
-var W = 50;
-var H = 50;
-var display = new Display({ width: W, height: H, fontSize: 16 });
-var text_display = new Display({ width: W, height: 12, fontSize: 16 });
+var W = 25;
+var H = 25;
+var FONT_SIZE = 16;
+var display = new Display({ width: W, height: H, fontSize: FONT_SIZE });
+var text_display = new Display({ width: W, height: 12, fontSize: FONT_SIZE });
 document.body.appendChild(display.getContainer());
 document.body.appendChild(text_display.getContainer());
 // Units
@@ -3778,6 +3779,7 @@ function b64DecodeUnicode(str) {
         return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
     }).join(''));
 }
+// Creators
 var Decoder = /** @class */ (function () {
     function Decoder(s) {
         this.value = "You Win!";
@@ -3796,9 +3798,6 @@ var Counter = /** @class */ (function () {
     };
     return Counter;
 }());
-var nCounter = new Counter();
-var nDecoder = new Decoder(getQuery('msg'));
-// Creators
 function createSolids() {
     return {
         solids: [],
@@ -3928,6 +3927,8 @@ var solids = createSolids();
 var char = createCharController(display, drawEvents);
 var notEdge = createEdgeChecker(0, 0, W, H);
 var isWalkable = createPathCheckFunction([solids.not.bind(solids), notEdge]);
+var nCounter = new Counter();
+var nDecoder = new Decoder(getQuery('msg'));
 // Map Generation
 function generateMap() {
     var map = new index.Cellular(W, H);

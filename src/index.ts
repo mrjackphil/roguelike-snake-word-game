@@ -1,9 +1,10 @@
 import * as ROT from 'rot-js';
 
-const W = 50;
-const H = 50;
-const display = new ROT.Display({width: W, height: H, fontSize: 16});
-const text_display = new ROT.Display({width: W, height: 12, fontSize: 16});
+const W = 25;
+const H = 25;
+const FONT_SIZE = 16;
+const display = new ROT.Display({width: W, height: H, fontSize: FONT_SIZE});
+const text_display = new ROT.Display({width: W, height: 12, fontSize: FONT_SIZE});
 document.body.appendChild(display.getContainer());
 document.body.appendChild(text_display.getContainer());
 
