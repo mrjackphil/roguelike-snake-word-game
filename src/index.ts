@@ -82,8 +82,8 @@ function getQuery(key: string) {
 }
 
 function b64EncodeUnicode(s: string) {
-  return btoa(encodeURIComponent(s).replace(/%([0-9A-F]{2})/g,
-  (match, p1) => String.fromCharCode(Number('0x' + p1)) ));
+  return btoa(encodeURIComponent(s).replace( /%([0-9A-F]{2})/g,
+    (match, p1) => String.fromCharCode(Number('0x' + p1)) ));
 }
 
 function b64DecodeUnicode(str: string) {
