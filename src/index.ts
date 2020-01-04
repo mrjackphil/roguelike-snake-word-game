@@ -7,9 +7,9 @@ const display = new ROT.Display({width: W, height: H, fontSize: FONT_SIZE});
 const text_display = new ROT.Display({width: W, height: 12, fontSize: FONT_SIZE});
 document.body.appendChild(display.getContainer());
 document.body.appendChild(text_display.getContainer());
+createLinkGenerator(document.body);
 
 // Units
-
 const player: Char = {
   id: 0,
   x: 0,
@@ -85,6 +85,16 @@ function b64DecodeUnicode(str: string) {
   return decodeURIComponent(Array.prototype.map.call(atob(str), function(c) {
       return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
   }).join(''))
+}
+
+function createLinkGenerator(h: HTMLElement): [HTMLTextAreaElement, HTMLButtonElement] {
+  const textarea = document.createElement('textarea');
+  const btn = document.createElement("button");
+  btn.innerHTML = "Generate link";
+
+  h.appendChild(textarea);
+  h.appendChild(btn);
+  return [textarea, btn];
 }
 
 // Creators

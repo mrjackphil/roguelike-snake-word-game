@@ -3736,6 +3736,7 @@ var display = new Display({ width: W, height: H, fontSize: FONT_SIZE });
 var text_display = new Display({ width: W, height: 12, fontSize: FONT_SIZE });
 document.body.appendChild(display.getContainer());
 document.body.appendChild(text_display.getContainer());
+createLinkGenerator(document.body);
 // Units
 var player = {
     id: 0,
@@ -3778,6 +3779,14 @@ function b64DecodeUnicode(str) {
     return decodeURIComponent(Array.prototype.map.call(atob(str), function (c) {
         return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
     }).join(''));
+}
+function createLinkGenerator(h) {
+    var textarea = document.createElement('textarea');
+    var btn = document.createElement("button");
+    btn.innerHTML = "Generate link";
+    h.appendChild(textarea);
+    h.appendChild(btn);
+    return [textarea, btn];
 }
 // Creators
 var Decoder = /** @class */ (function () {
