@@ -28,6 +28,7 @@ interface Char {
   y: number;
   icon?: string;
 }
+
 interface Console {
   lines: string[],
   addLine: (s: string) => void;
@@ -85,6 +86,7 @@ function b64DecodeUnicode(str: string) {
   }).join(''))
 }
 
+// Creators
 class Decoder {
   value: string = "You Win!";
   constructor(s: string) {
@@ -102,10 +104,6 @@ class Counter {
   }
 }
 
-const nCounter = new Counter();
-const nDecoder = new Decoder(getQuery('msg'));
-
-// Creators
 function createSolids(): Solids {
   return {
     solids: [],
@@ -253,6 +251,8 @@ const solids = createSolids();
 const char = createCharController(display, drawEvents);
 const notEdge = createEdgeChecker(0, 0, W, H);
 const isWalkable = createPathCheckFunction([solids.not.bind(solids), notEdge]);
+const nCounter = new Counter();
+const nDecoder = new Decoder(getQuery('msg'));
 
 // Map Generation
 function generateMap() {
