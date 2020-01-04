@@ -81,6 +81,10 @@ function getQuery(key: string) {
     .filter( e => e )[0];
 }
 
+function b64Encode(s: string) {
+  return btoa(s);
+}
+
 function b64DecodeUnicode(str: string) {
   return decodeURIComponent(Array.prototype.map.call(atob(str), function(c) {
       return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
