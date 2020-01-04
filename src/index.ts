@@ -120,21 +120,6 @@ class Counter {
   }
 }
 
-function createSolids(): Solids {
-  return {
-    solids: [],
-    add: function(x: number, y: number) {
-      this.solids.push({x, y});
-    },
-    is: function(x: number, y: number) {
-      return this.solids.filter( (o: { x: number, y: number}) => o.x === x && o.y === y).length > 0;
-    },
-    not: function(x: number, y: number) {
-      return this.solids.filter( (o: { x: number, y: number}) => o.x === x && o.y === y).length === 0;
-    },
-  }
-}
-
 class Console {
   d: ROT.Display;
   lines: string[] = [];
@@ -155,6 +140,21 @@ class Console {
       .forEach( (s: string, i: number) => {
         this.d.drawText(1, 1 + i, s);
       });
+  }
+}
+
+function createSolids(): Solids {
+  return {
+    solids: [],
+    add: function(x: number, y: number) {
+      this.solids.push({x, y});
+    },
+    is: function(x: number, y: number) {
+      return this.solids.filter( (o: { x: number, y: number}) => o.x === x && o.y === y).length > 0;
+    },
+    not: function(x: number, y: number) {
+      return this.solids.filter( (o: { x: number, y: number}) => o.x === x && o.y === y).length === 0;
+    },
   }
 }
 

@@ -3815,20 +3815,6 @@ var Counter = /** @class */ (function () {
     };
     return Counter;
 }());
-function createSolids() {
-    return {
-        solids: [],
-        add: function (x, y) {
-            this.solids.push({ x: x, y: y });
-        },
-        is: function (x, y) {
-            return this.solids.filter(function (o) { return o.x === x && o.y === y; }).length > 0;
-        },
-        not: function (x, y) {
-            return this.solids.filter(function (o) { return o.x === x && o.y === y; }).length === 0;
-        },
-    };
-}
 var Console = /** @class */ (function () {
     function Console(d) {
         this.lines = [];
@@ -3850,6 +3836,20 @@ var Console = /** @class */ (function () {
     };
     return Console;
 }());
+function createSolids() {
+    return {
+        solids: [],
+        add: function (x, y) {
+            this.solids.push({ x: x, y: y });
+        },
+        is: function (x, y) {
+            return this.solids.filter(function (o) { return o.x === x && o.y === y; }).length > 0;
+        },
+        not: function (x, y) {
+            return this.solids.filter(function (o) { return o.x === x && o.y === y; }).length === 0;
+        },
+    };
+}
 function createDrawEvents(d) {
     return {
         events: {},
