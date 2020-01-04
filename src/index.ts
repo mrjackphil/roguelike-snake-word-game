@@ -30,12 +30,6 @@ interface Char {
   icon?: string;
 }
 
-interface Console {
-  lines: string[],
-  addLine: (s: string) => void;
-  update: () => void;
-}
-
 interface Solids {
   solids: {x: number, y: number}[],
   add: (x: number, y: number) => void,
@@ -141,22 +135,26 @@ function createSolids(): Solids {
   }
 }
 
-function createConsole(d: ROT.Display): Console {
-  return {
-    lines: [],
-    addLine: function(s: string) {
-      this.lines.push(s);
-      this.update();
-    },
-    update: function() {
-      d.clear();
-      this.lines
-        .reverse()
-        .slice(0, 10)
-        .forEach( (s: string, i: number) => {
-          d.drawText(1, 1 + i, s);
-        });
-    }
+class Console {
+  d: ROT.Display;
+  lines: string[] = [];
+  constructor(d: ROT.Display) {
+    this.d = d;
+  };
+
+  public addLine(s: string): void {
+    this.lines.push(s);
+    this.update();
+  }
+
+  public update() {
+    this.d.clear();
+    this.lines
+      .sort( (a, b) => b.length - a.length )
+      .slice(0, 10)
+      .forEach( (s: string, i: number) => {
+        this.d.drawText(1, 1 + i, s);
+      });
   }
 }
 
@@ -266,7 +264,7 @@ function createEdgeChecker(
 }
 
 // Initalization
-const log = createConsole(text_display);
+const log = new Console(text_display);
 const sendLog = createLogger(log);
 const drawEvents = createDrawEvents(display);
 const solids = createSolids();

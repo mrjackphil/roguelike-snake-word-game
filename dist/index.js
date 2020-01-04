@@ -3829,24 +3829,27 @@ function createSolids() {
         },
     };
 }
-function createConsole(d) {
-    return {
-        lines: [],
-        addLine: function (s) {
-            this.lines.push(s);
-            this.update();
-        },
-        update: function () {
-            d.clear();
-            this.lines
-                .reverse()
-                .slice(0, 10)
-                .forEach(function (s, i) {
-                d.drawText(1, 1 + i, s);
-            });
-        }
+var Console = /** @class */ (function () {
+    function Console(d) {
+        this.lines = [];
+        this.d = d;
+    }
+    Console.prototype.addLine = function (s) {
+        this.lines.push(s);
+        this.update();
     };
-}
+    Console.prototype.update = function () {
+        var _this = this;
+        this.d.clear();
+        this.lines
+            .sort(function (a, b) { return b.length - a.length; })
+            .slice(0, 10)
+            .forEach(function (s, i) {
+            _this.d.drawText(1, 1 + i, s);
+        });
+    };
+    return Console;
+}());
 function createDrawEvents(d) {
     return {
         events: {},
@@ -3937,7 +3940,7 @@ function createEdgeChecker(minx, miny, maxx, maxy) {
     };
 }
 // Initalization
-var log = createConsole(text_display);
+var log = new Console(text_display);
 var sendLog = createLogger(log);
 var drawEvents = createDrawEvents(display);
 var solids = createSolids();
