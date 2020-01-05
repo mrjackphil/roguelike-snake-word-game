@@ -3874,6 +3874,9 @@ var Console = /** @class */ (function () {
             _this.d.drawText(1, 1 + i, s);
         });
     };
+    Console.prototype.clear = function () {
+        this.lines = [];
+    };
     return Console;
 }());
 function createSolids() {
@@ -3968,6 +3971,9 @@ function createCharController(d, dEv) {
             // Unpure usage of `npc` variable
             npcTick(npc);
             dEv.draw();
+            if (nDecoder.value.length === nCounter.i) {
+                finishGame(log, nDecoder.value);
+            }
         }
     };
 }
@@ -3978,6 +3984,11 @@ function createEdgeChecker(minx, miny, maxx, maxy) {
             && y <= maxy - 1
             && y >= miny;
     };
+}
+function finishGame(l, text) {
+    l.clear();
+    l.addLine("Your message is: \"" + text + "\"");
+    display.clear();
 }
 // Initalization
 var log = new Console(text_display);

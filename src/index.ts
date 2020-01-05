@@ -198,6 +198,10 @@ class Console {
         this.d.drawText(1, 1 + i, s);
       });
   }
+
+  public clear() {
+    this.lines = [];
+  }
 }
 
 function createSolids(): Solids {
@@ -303,6 +307,10 @@ function createCharController(d: ROT.Display, dEv: DrawEvent) {
       // Unpure usage of `npc` variable
       npcTick(npc);
       dEv.draw();
+
+      if (nDecoder.value.length === nCounter.i) {
+        finishGame(log, nDecoder.value);
+      }
     }
   }
 }
@@ -318,6 +326,12 @@ function createEdgeChecker(
     && x >= minx
     && y <= maxy - 1
     && y >= miny
+}
+
+function finishGame(l: Console, text: string) {
+  l.clear();
+  l.addLine(`Your message is: "${text}"`);
+  display.clear();
 }
 
 // Initalization
