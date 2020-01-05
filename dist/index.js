@@ -3748,7 +3748,7 @@ document.body.appendChild(appElem);
 appElem.appendChild(display.getContainer());
 appElem.appendChild(text_display.getContainer());
 var _a = createLinkGenerator(appElem), textAreaElem = _a[0], btnElem = _a[1], anchorElem = _a[2];
-(function (body, el, txt, btn, a) {
+(function (body, el, txt, btn, a, d) {
     body.style.background = "black";
     body.style.display = "flex";
     body.style.justifyContent = "center";
@@ -3761,7 +3761,7 @@ var _a = createLinkGenerator(appElem), textAreaElem = _a[0], btnElem = _a[1], an
     txt.style.borderRadius = "5px";
     txt.style.resize = "none";
     txt.style.width = "100%";
-    txt.placeholder = "Put your text here and press submit to generate link";
+    txt.placeholder = "Put your text here and press \"Generate link\" to... you know... generate link.";
     txt.style.padding = "5px";
     txt.style.margin = "5px";
     btn.style.border = "1px solid white";
@@ -3774,7 +3774,10 @@ var _a = createLinkGenerator(appElem), textAreaElem = _a[0], btnElem = _a[1], an
     a.style.textAlign = "center";
     a.style.display = "block";
     a.style.margin = "5px";
-})(document.body, appElem, textAreaElem, btnElem, anchorElem);
+    d.style.border = "1px solid white";
+    d.style.display = "block";
+    d.style.margin = "5px auto";
+})(document.body, appElem, textAreaElem, btnElem, anchorElem, display.getContainer());
 // Units
 var player = {
     id: 0,

@@ -30,6 +30,7 @@ const [textAreaElem, btnElem, anchorElem] = createLinkGenerator(appElem);
   txt?: HTMLTextAreaElement,
   btn?: HTMLButtonElement,
   a?: HTMLAnchorElement,
+  d?: HTMLElement
 ){
   body.style.background = "black";
   body.style.display = "flex";
@@ -45,7 +46,7 @@ const [textAreaElem, btnElem, anchorElem] = createLinkGenerator(appElem);
   txt.style.borderRadius = "5px";
   txt.style.resize = "none";
   txt.style.width = "100%";
-  txt.placeholder = "Put your text here and press submit to generate link";
+  txt.placeholder = "Put your text here and press \"Generate link\" to... you know... generate link.";
   txt.style.padding = "5px";
   txt.style.margin = "5px";
 
@@ -61,7 +62,11 @@ const [textAreaElem, btnElem, anchorElem] = createLinkGenerator(appElem);
   a.style.display = "block";
   a.style.margin = "5px";
 
-})(document.body, appElem, textAreaElem, btnElem, anchorElem);
+  d.style.border = "1px solid white";
+  d.style.display = "block";
+  d.style.margin = "5px auto";
+
+})(document.body, appElem, textAreaElem, btnElem, anchorElem, display.getContainer());
 
 // Units
 const player: Char = {
