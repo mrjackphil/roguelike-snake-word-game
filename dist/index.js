@@ -3841,7 +3841,7 @@ var Decoder = /** @class */ (function () {
     function Decoder(s) {
         this.value = "You Win!";
         if (s) {
-            this.value = b64DecodeUnicode(s);
+            this.value = b64DecodeUnicode(s).replace(/\n/g, " ");
         }
     }
     return Decoder;

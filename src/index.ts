@@ -164,7 +164,7 @@ class Decoder {
   value: string = "You Win!";
   constructor(s: string) {
     if (s) {
-      this.value = b64DecodeUnicode(s);
+      this.value = b64DecodeUnicode(s).replace(/\n/g, " ");
     }
   }
 }
