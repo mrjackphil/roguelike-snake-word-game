@@ -160,7 +160,7 @@ function createLinkGenerator(h: HTMLElement): LinkGeneratorOutput {
       } else if (/msg\=/.test(window.location.href)) {
         return w.location.href.replace(/msg\=.+?(\&|$)/, "msg=" + b64EncodeUnicode(textarea.value));
       } else {
-        return w.location.origin + "?msg=" + b64EncodeUnicode(textarea.value);
+        return w.location.href + "?msg=" + b64EncodeUnicode(textarea.value);
       }
     }
 

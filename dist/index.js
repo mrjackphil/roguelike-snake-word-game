@@ -3840,7 +3840,7 @@ function createLinkGenerator(h) {
                 return w.location.href.replace(/msg\=.+?(\&|$)/, "msg=" + b64EncodeUnicode(textarea.value));
             }
             else {
-                return w.location.origin + "?msg=" + b64EncodeUnicode(textarea.value);
+                return w.location.href + "?msg=" + b64EncodeUnicode(textarea.value);
             }
         }
         var url = urlGen();
