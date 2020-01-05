@@ -3729,9 +3729,11 @@ var index = { Arena, Uniform, Cellular, Digger, EllerMaze, DividedMaze, IceyMaze
 
 const Util = util;
 
+var _a;
 var W = 25;
 var H = 25;
 var FONT_SIZE = 16;
+var w = ((_a = window.parent) === null || _a === void 0 ? void 0 : _a.window) || window;
 var display = new Display({
     width: W,
     height: H,
@@ -3747,7 +3749,7 @@ var appElem = document.createElement("div");
 document.body.appendChild(appElem);
 appElem.appendChild(display.getContainer());
 appElem.appendChild(text_display.getContainer());
-var _a = createLinkGenerator(appElem), textAreaElem = _a[0], btnElem = _a[1], anchorElem = _a[2];
+var _b = createLinkGenerator(appElem), textAreaElem = _b[0], btnElem = _b[1], anchorElem = _b[2];
 (function (body, el, txt, btn, a, d) {
     body.style.background = "black";
     body.style.display = "flex";
@@ -3810,7 +3812,7 @@ function getQuery(key) {
         var keyValue = s.split('=');
         return keyValue[0] === key && keyValue[1];
     };
-    return window.location.search
+    return w.location.search
         .replace('?', '')
         .split('&')
         .map(function (s) { return msgValue(s); })
@@ -3830,7 +3832,18 @@ function createLinkGenerator(h) {
     var btn = document.createElement("button");
     btn.innerHTML = "Generate link";
     btn.addEventListener('click', function () {
-        var url = window.location.origin + "?msg=" + b64EncodeUnicode(textarea.value);
+        function urlGen() {
+            if (/\?/.test(window.location.href) && !/msg\=/.test(window.location.href)) {
+                return w.location.href + "&msg=" + b64EncodeUnicode(textarea.value);
+            }
+            else if (/msg\=/.test(window.location.href)) {
+                return w.location.href.replace(/msg\=.+?(\&|$)/, "msg=" + b64EncodeUnicode(textarea.value));
+            }
+            else {
+                return w.location.origin + "?msg=" + b64EncodeUnicode(textarea.value);
+            }
+        }
+        var url = urlGen();
         href.setAttribute("href", url);
         href.innerHTML = url;
     });

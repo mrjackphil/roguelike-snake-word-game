@@ -4,6 +4,7 @@ const W = 25;
 const H = 25;
 const FONT_SIZE = 16;
 
+const w = window.parent?.window || window;
 const display = new ROT.Display({
   width: W,
   height: H,
@@ -127,7 +128,7 @@ function getQuery(key: string) {
     return keyValue[0] === key && keyValue[1];
   }
 
-  return window.location.search
+  return w.location.search
     .replace('?', '')
     .split('&')
     .map( s => msgValue(s) )
@@ -153,7 +154,17 @@ function createLinkGenerator(h: HTMLElement): LinkGeneratorOutput {
 
   btn.innerHTML = "Generate link";
   btn.addEventListener('click', () => {
-    const url = window.location.origin + "?msg=" + b64EncodeUnicode(textarea.value);
+    function urlGen() {
+      if (/\?/.test(window.location.href) && !/msg\=/.test(window.location.href)) { 
+        return w.location.href + "&msg=" + b64EncodeUnicode(textarea.value);
+      } else if (/msg\=/.test(window.location.href)) {
+        return w.location.href.replace(/msg\=.+?(\&|$)/, "msg=" + b64EncodeUnicode(textarea.value));
+      } else {
+        return w.location.origin + "?msg=" + b64EncodeUnicode(textarea.value);
+      }
+    }
+
+    const url = urlGen();
     href.setAttribute("href", url);
     href.innerHTML = url;
   });
