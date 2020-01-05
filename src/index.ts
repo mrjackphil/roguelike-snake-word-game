@@ -86,20 +86,23 @@ function b64DecodeUnicode(str: string) {
   }).join(''))
 }
 
-function createLinkGenerator(h: HTMLElement): [HTMLTextAreaElement, HTMLButtonElement] {
+type LinkGeneratorOutput = [HTMLTextAreaElement, HTMLButtonElement, HTMLAnchorElement];
+function createLinkGenerator(h: HTMLElement): LinkGeneratorOutput {
   const textarea = document.createElement('textarea');
-  const div = document.createElement("div");
+  const href = document.createElement("a");
   const btn = document.createElement("button");
 
   btn.innerHTML = "Generate link";
   btn.addEventListener('click', () => {
-    div.innerHTML = window.location.origin + "?msg=" + b64EncodeUnicode(textarea.value);
+    const url = window.location.origin + "?msg=" + b64EncodeUnicode(textarea.value);
+    href.setAttribute("href", url);
+    href.innerHTML = url;
   });
 
   h.appendChild(textarea);
-  h.appendChild(div);
+  h.appendChild(href);
   h.appendChild(btn);
-  return [textarea, btn];
+  return [textarea, btn, href];
 }
 
 // Creators
