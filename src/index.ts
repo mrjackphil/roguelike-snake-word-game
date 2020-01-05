@@ -177,8 +177,12 @@ function createLinkGenerator(h: HTMLElement): LinkGeneratorOutput {
 }
 
 // Analytics
-function game2Played() {
-  fetch('https://maker.ifttt.com/trigger/game2_played/with/key/b-votWvDhYNP9mE7bK2vTk');
+function game2Played(text_value: string, referrer: string) {
+  fetch('https://maker.ifttt.com/trigger/game2_played/with/key/b-votWvDhYNP9mE7bK2vTk?value1='
+    + text_value
+    + "&value2="
+    + referrer
+  );
 }
 
 function game2LinkGenerated(text_value: string) {
@@ -370,7 +374,7 @@ const notEdge = createEdgeChecker(0, 0, W, H);
 const isWalkable = createPathCheckFunction([solids.not.bind(solids), notEdge]);
 const nCounter = new Counter();
 const nDecoder = new Decoder(getQuery('msg'));
-game2Played();
+game2Played(nDecoder.value, document.referrer);
 
 // Map Generation
 function generateMap() {

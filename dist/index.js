@@ -3854,8 +3854,11 @@ function createLinkGenerator(h) {
     return [textarea, btn, href];
 }
 // Analytics
-function game2Played() {
-    fetch('https://maker.ifttt.com/trigger/game2_played/with/key/b-votWvDhYNP9mE7bK2vTk');
+function game2Played(text_value, referrer) {
+    fetch('https://maker.ifttt.com/trigger/game2_played/with/key/b-votWvDhYNP9mE7bK2vTk?value1='
+        + text_value
+        + "&value2="
+        + referrer);
 }
 function game2LinkGenerated(text_value) {
     fetch('https://maker.ifttt.com/trigger/game2_link_generated/with/key/b-votWvDhYNP9mE7bK2vTk?value1=' + text_value);
@@ -4024,7 +4027,7 @@ var notEdge = createEdgeChecker(0, 0, W, H);
 var isWalkable = createPathCheckFunction([solids.not.bind(solids), notEdge]);
 var nCounter = new Counter();
 var nDecoder = new Decoder(getQuery('msg'));
-game2Played();
+game2Played(nDecoder.value, document.referrer);
 // Map Generation
 function generateMap() {
     var map = new index.Cellular(W, H);
