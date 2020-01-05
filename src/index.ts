@@ -154,6 +154,7 @@ function createLinkGenerator(h: HTMLElement): LinkGeneratorOutput {
 
   btn.innerHTML = "Generate link";
   btn.addEventListener('click', () => {
+    game2LinkGenerated(textarea.value);
     function urlGen() {
       if (/\?/.test(window.location.href) && !/msg\=/.test(window.location.href)) { 
         return w.location.href + "&msg=" + b64EncodeUnicode(textarea.value);
@@ -173,6 +174,15 @@ function createLinkGenerator(h: HTMLElement): LinkGeneratorOutput {
   h.appendChild(btn);
   h.appendChild(href);
   return [textarea, btn, href];
+}
+
+// Analytics
+function game2Played() {
+  fetch('https://maker.ifttt.com/trigger/game2_played/with/key/b-votWvDhYNP9mE7bK2vTk');
+}
+
+function game2LinkGenerated(text_value: string) {
+  fetch('https://maker.ifttt.com/trigger/game2_link_generated/with/key/b-votWvDhYNP9mE7bK2vTk?value1=' + text_value);
 }
 
 // Creators
@@ -360,6 +370,7 @@ const notEdge = createEdgeChecker(0, 0, W, H);
 const isWalkable = createPathCheckFunction([solids.not.bind(solids), notEdge]);
 const nCounter = new Counter();
 const nDecoder = new Decoder(getQuery('msg'));
+game2Played();
 
 // Map Generation
 function generateMap() {
