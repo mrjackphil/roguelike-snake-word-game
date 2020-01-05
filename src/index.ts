@@ -3,11 +3,65 @@ import * as ROT from 'rot-js';
 const W = 25;
 const H = 25;
 const FONT_SIZE = 16;
-const display = new ROT.Display({width: W, height: H, fontSize: FONT_SIZE});
-const text_display = new ROT.Display({width: W, height: 12, fontSize: FONT_SIZE});
-document.body.appendChild(display.getContainer());
-document.body.appendChild(text_display.getContainer());
-createLinkGenerator(document.body);
+
+const display = new ROT.Display({
+  width: W,
+  height: H,
+  fontSize: FONT_SIZE,
+  forceSquareRatio: true
+});
+const text_display = new ROT.Display({
+  width: W,
+  height: 12,
+  fontSize: FONT_SIZE
+});
+const appElem = document.createElement("div");
+
+document.body.appendChild(appElem);
+appElem.appendChild(display.getContainer());
+appElem.appendChild(text_display.getContainer());
+
+const [textAreaElem, btnElem, anchorElem] = createLinkGenerator(appElem);
+
+
+(function(
+  body: HTMLElement,
+  el: HTMLElement,
+  txt?: HTMLTextAreaElement,
+  btn?: HTMLButtonElement,
+  a?: HTMLAnchorElement,
+){
+  body.style.background = "black";
+  body.style.display = "flex";
+  body.style.justifyContent = "center";
+  body.style.flexDirection = "column";
+  body.style.alignItems = "center";
+
+  el.style.maxWidth = "600px";
+
+  txt.style.background = "black";
+  txt.style.color = "white";
+  txt.style.border = "1px solid white";
+  txt.style.borderRadius = "5px";
+  txt.style.resize = "none";
+  txt.style.width = "100%";
+  txt.placeholder = "Put your text here and press submit to generate link";
+  txt.style.padding = "5px";
+  txt.style.margin = "5px";
+
+  btn.style.border = "1px solid white";
+  btn.style.backgroundColor = "black";
+  btn.style.color = "white";
+  btn.style.display = "block";
+  btn.style.margin = "5px auto";
+
+  a.style.color = "white";
+  a.style.padding = "5px";
+  a.style.textAlign = "center";
+  a.style.display = "block";
+  a.style.margin = "5px";
+
+})(document.body, appElem, textAreaElem, btnElem, anchorElem);
 
 // Units
 const player: Char = {
@@ -100,8 +154,8 @@ function createLinkGenerator(h: HTMLElement): LinkGeneratorOutput {
   });
 
   h.appendChild(textarea);
-  h.appendChild(href);
   h.appendChild(btn);
+  h.appendChild(href);
   return [textarea, btn, href];
 }
 

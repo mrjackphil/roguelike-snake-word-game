@@ -3732,11 +3732,49 @@ const Util = util;
 var W = 25;
 var H = 25;
 var FONT_SIZE = 16;
-var display = new Display({ width: W, height: H, fontSize: FONT_SIZE });
-var text_display = new Display({ width: W, height: 12, fontSize: FONT_SIZE });
-document.body.appendChild(display.getContainer());
-document.body.appendChild(text_display.getContainer());
-createLinkGenerator(document.body);
+var display = new Display({
+    width: W,
+    height: H,
+    fontSize: FONT_SIZE,
+    forceSquareRatio: true
+});
+var text_display = new Display({
+    width: W,
+    height: 12,
+    fontSize: FONT_SIZE
+});
+var appElem = document.createElement("div");
+document.body.appendChild(appElem);
+appElem.appendChild(display.getContainer());
+appElem.appendChild(text_display.getContainer());
+var _a = createLinkGenerator(appElem), textAreaElem = _a[0], btnElem = _a[1], anchorElem = _a[2];
+(function (body, el, txt, btn, a) {
+    body.style.background = "black";
+    body.style.display = "flex";
+    body.style.justifyContent = "center";
+    body.style.flexDirection = "column";
+    body.style.alignItems = "center";
+    el.style.maxWidth = "600px";
+    txt.style.background = "black";
+    txt.style.color = "white";
+    txt.style.border = "1px solid white";
+    txt.style.borderRadius = "5px";
+    txt.style.resize = "none";
+    txt.style.width = "100%";
+    txt.placeholder = "Put your text here and press submit to generate link";
+    txt.style.padding = "5px";
+    txt.style.margin = "5px";
+    btn.style.border = "1px solid white";
+    btn.style.backgroundColor = "black";
+    btn.style.color = "white";
+    btn.style.display = "block";
+    btn.style.margin = "5px auto";
+    a.style.color = "white";
+    a.style.padding = "5px";
+    a.style.textAlign = "center";
+    a.style.display = "block";
+    a.style.margin = "5px";
+})(document.body, appElem, textAreaElem, btnElem, anchorElem);
 // Units
 var player = {
     id: 0,
@@ -3785,16 +3823,18 @@ function b64DecodeUnicode(str) {
 }
 function createLinkGenerator(h) {
     var textarea = document.createElement('textarea');
-    var div = document.createElement("div");
+    var href = document.createElement("a");
     var btn = document.createElement("button");
     btn.innerHTML = "Generate link";
     btn.addEventListener('click', function () {
-        div.innerHTML = window.location.origin + "?msg=" + b64EncodeUnicode(textarea.value);
+        var url = window.location.origin + "?msg=" + b64EncodeUnicode(textarea.value);
+        href.setAttribute("href", url);
+        href.innerHTML = url;
     });
     h.appendChild(textarea);
-    h.appendChild(div);
     h.appendChild(btn);
-    return [textarea, btn];
+    h.appendChild(href);
+    return [textarea, btn, href];
 }
 // Creators
 var Decoder = /** @class */ (function () {
